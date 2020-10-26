@@ -33,9 +33,10 @@ language("ita").
 
 
 /*Define plan triggering some subgoal */
+
 +!printCurrentAndNext(X)
 	<- .println("act1");
-	!subgoalPrint(X,OUTPUT);    //sequentially not parallel
+	!subgoalPrint(X,OUTPUT);    //sequentially not parallel stop the current intention
 	!subgoalPrint(OUTPUT,OUTPUT2);
 	.println("Done all subgoal").
 

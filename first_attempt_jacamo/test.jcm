@@ -12,19 +12,7 @@
     <DATE>
 */
 
-mas first_project {
-	 
-    agent simone : sample_agent.asl {
-    	goals: hello_world("Forlì"), printCurrentAndNext(1)
-    		
-    		
-    }
-    
-    agent elisa : sample_agent.asl {
-    	goals: hello_world("Cagliari")
-    }
-    
-    //agent scucchia : counter_user.asl
-
+mas test {
+    agent majordomo : majordomo.asl
+    agent counter : counter_with_ricci.asl 
 }
-
