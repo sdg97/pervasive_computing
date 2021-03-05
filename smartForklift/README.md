@@ -1,1 +1,1 @@
-Printer compatible with Dymo LabelWriter 450
+Smart forklift prototype
