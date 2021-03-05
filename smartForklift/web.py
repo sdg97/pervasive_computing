@@ -14,8 +14,8 @@ from flask import Flask
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 
-from app.label_writer_450 import label_writer_450
-app.register_blueprint(label_writer_450, url_prefix='/label_writer_450')
+from app.smartForklift import smartForklift
+app.register_blueprint(smartForklift, url_prefix='/smartForklift')
 
 
 
