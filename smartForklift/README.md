@@ -1,0 +1,1 @@
+Printer compatible with Dymo LabelWriter 450
