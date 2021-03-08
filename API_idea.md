@@ -34,9 +34,17 @@ placements:[
     Scrive sulla prima linea il codice prodotto,
     sulla seconda la quantità
 
+### POST /placements/{placement_id}/picked
+    Indica che è stato preso il prodotto
+
+    Spegne led giallo 
+    Scrive che si sta facendo il picking
+
+
 ### POST /placements/{placement_id}/orderDone
     Dice che l'ordine in quella posizione è finito e invita il magazziniere ad associargliene un altro
 
     Spegni tutti i led
     Stampa sugli schermi "Ready to handle an order"
 
+Potrei lavorare con gli ordini dalle API è più semplice capire
