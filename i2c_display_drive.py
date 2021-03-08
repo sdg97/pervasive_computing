@@ -102,6 +102,9 @@ def main():
 
     time.sleep(3)
 
+    lcd_string("CLEAR",LCD_LINE_1)
+    lcd_string("",LCD_LINE_2)
+
 if __name__ == '__main__':
 
   try:
@@ -110,4 +113,3 @@ if __name__ == '__main__':
     pass
   finally:
     lcd_byte(0x01, LCD_CMD)
-

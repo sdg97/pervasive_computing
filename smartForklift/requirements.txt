@@ -15,5 +15,7 @@ XlsxWriter
 schwifty
 Babel
 pycountry
+smbus
+gpiozero
 
 gunicorn
