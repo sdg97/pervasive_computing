@@ -21,6 +21,7 @@ placements:[
 - script di avvio del server in accensione
 - batteria / corrente 
 - led di accensione
+- settaggio delle configurazioni dall'esterno
 
 ### POST /startUseSmartForklift
     Spegni tutti i led
