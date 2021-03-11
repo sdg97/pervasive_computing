@@ -29,25 +29,29 @@ def index():
 @smartForklift.route('/startUseSmartForklift', methods=['POST', 'OPTIONS'])
 @libs.cors.crossdomain(origin='*')
 def startUseSmartForklift():
-    lcd_init()
     config = getConfig()
-    lcd_string("READY-TO-CONNECT",LCD_LINE_1)
     ledOn(config['ready_led_pin'])
+    ids = []
     for placement in config['placements']:
         ledOff(placement['ready_led_pin'])
         ledOff(placement['catch_attention_led_pin'])
-    return "ok"
+        dc = placement['display_channel']
+        lcd_init(dc)
+        lcd_string("READY-TO-CONNECT",LCD_LINE_1,dc)
+        ids.append(placement['id'])
+    return flask.jsonify(ids)
 
 @smartForklift.route('/setPlacement', methods=['POST', 'OPTIONS'])
 @libs.cors.crossdomain(origin='*')
 def setPlacement():
-    lcd_init()
     data = flask.request.get_json()
     placement_id = data['placement_id']
     order_id = data['order_id']
     config = getConfig(placement_id)
-    lcd_string("ORDER {}".format(order_id),LCD_LINE_1)
-    lcd_string("PICKING",LCD_LINE_2)
+    dc = config['display_channel']
+    lcd_init(dc)
+    lcd_string("ORDER {}".format(order_id),LCD_LINE_1, dc)
+    lcd_string("PICKING",LCD_LINE_2, dc)
     ledOn(config['ready_led_pin'])
     return "ok"
 
@@ -55,26 +59,40 @@ def setPlacement():
 @smartForklift.route('/placements/<int:id>/putItHere', methods=['POST', 'OPTIONS'])
 @libs.cors.crossdomain(origin='*')
 def putItHere(id):
-    lcd_init()
     data = flask.request.get_json()
     placement_id = id
     product_code = data['product_code']
     qty = data['qty']
     config = getConfig(placement_id)
-    lcd_string("{}".format(product_code),LCD_LINE_1)
-    lcd_string("{}".format(qty),LCD_LINE_2)
+    dc = config['display_channel']
+    lcd_init(dc)
+    lcd_string("{}".format(product_code),LCD_LINE_1, dc)
+    lcd_string("{}".format(qty),LCD_LINE_2, dc)
     ledOn(config['catch_attention_led_pin'])
     return "ok"
 
 @smartForklift.route('/placements/<int:id>/picked', methods=['POST', 'OPTIONS'])
 @libs.cors.crossdomain(origin='*')
 def picked(id):
-    lcd_init()
     data = flask.request.get_json()
     placement_id = id
     order_id = data['order_id']
     config = getConfig(placement_id)
-    lcd_string("ORDER {}".format(order_id),LCD_LINE_1)
-    lcd_string("PICKING",LCD_LINE_2)
+    dc = config['display_channel']
+    lcd_init(dc)
+    lcd_string("ORDER {}".format(order_id),LCD_LINE_1, dc)
+    lcd_string("PICKING",LCD_LINE_2, dc)
     ledOff(config['catch_attention_led_pin'])
+    return "ok"
+
+@smartForklift.route('/placements/<int:id>/orderDone', methods=['POST', 'OPTIONS'])
+@libs.cors.crossdomain(origin='*')
+def orderDone(id):
+    placement_id = id
+    placement = getConfig(placement_id)
+    dc = placement['display_channel']
+    lcd_init(dc)
+    lcd_string("READY-TO-CONNECT",LCD_LINE_1,dc)
+    ledOff(placement['ready_led_pin'])
+    ledOff(placement['catch_attention_led_pin'])
     return "ok"

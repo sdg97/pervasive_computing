@@ -5,12 +5,12 @@
         "id": 1,
         "ready_led_pin": 15,
         "catch_attention_led_pin": 14,
-        "display_address": "0x27"
+        "display_channel": 2
     },
     {
         "id": 2,
         "ready_led_pin": 23,
         "catch_attention_led_pin": 18,
-        "display_address": "0x27"
+        "display_channel": 3
     }]
 }

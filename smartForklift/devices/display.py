@@ -1,19 +1,11 @@
-'- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -'
-'  __  __         _   _        _    ____         _        _       '
-' |  \/  | _   _ | \ | |  ___ | |_ | __ )  _ __ (_)  ___ | | __   '
-' | |\/| || | | ||  \| | / _ \| __||  _ \ |  __|| | / __|| |/ /   '
-' | |  | || |_| || |\  ||  __/| |_ | |_) || |   | || (__ |   <    '
-' |_|  |_| \__, ||_| \_| \___| \__||____/ |_|   |_| \___||_|\_\   ' 
-'          |___/                                                  '
-'_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _'
-
-
 import smbus
 import time
+from .multiplexer import *
 
 # Define some device parameters
 I2C_ADDR  = 0x27 # I2C device address, if any error, change this address to 0x3f
 LCD_WIDTH = 16   # Maximum characters per line
+TCA9548A_address = 0x70
 
 # Define some device constants
 LCD_CHR = 1 # Mode - Sending data
@@ -36,8 +28,11 @@ E_DELAY = 0.0005
 #Open I2C interface
 #bus = smbus.SMBus(0)  # Rev 1 Pi uses 0
 bus = smbus.SMBus(1) # Rev 2 Pi uses 1
+plexer = multiplex(bus)
 
-def lcd_init():
+def lcd_init(channel):
+  plexer.channel(TCA9548A_address,channel)
+
   # Initialise display
   lcd_byte(0x33,LCD_CMD) # 110011 Initialise
   lcd_byte(0x32,LCD_CMD) # 110010 Initialise
@@ -72,9 +67,9 @@ def lcd_toggle_enable(bits):
   bus.write_byte(I2C_ADDR,(bits & ~ENABLE))
   time.sleep(E_DELAY)
 
-def lcd_string(message,line):
+def lcd_string(message,line, channel):
   # Send string to display
-
+  plexer.channel(TCA9548A_address,channel)
   message = message.ljust(LCD_WIDTH," ")
 
   lcd_byte(line, LCD_CMD)
@@ -86,19 +81,23 @@ def main():
   # Main program block
 
   # Initialise display
-  lcd_init()
+  lcd_init(2)
+  lcd_init(3)
 
   while True:
 
     # Send some test
-    lcd_string(" Hello  World ",LCD_LINE_1)
-    lcd_string("-***  **  ***-",LCD_LINE_2)
-
+    lcd_string(" Hello  World ",LCD_LINE_1,2)
+    lcd_string("-***  **  ***-",LCD_LINE_2,2)
+    lcd_string(" Hello  World ",LCD_LINE_1,3)
+    lcd_string("-***  **  ***-",LCD_LINE_2,3)
     time.sleep(5)
   
     # Send some more text
-    lcd_string("Tutorial by",LCD_LINE_1)
-    lcd_string("mynetbrick.com",LCD_LINE_2)
+    lcd_string("Tutorial by",LCD_LINE_1,2)
+    lcd_string("mynetbrick.com",LCD_LINE_2,2)
+    lcd_string("Tutorial by",LCD_LINE_1,3)
+    lcd_string("mynetbrick.com",LCD_LINE_2,3)
 
     time.sleep(3)
 
