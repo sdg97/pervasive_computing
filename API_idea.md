@@ -16,6 +16,10 @@ placements:[
     }
 ]
 ```
+### NB 
+- reboot 
+- script di avvio del server in accensione
+- batteria / corrente 
 
 ### POST /startUseSmartForklift
     Spegni tutti i led
