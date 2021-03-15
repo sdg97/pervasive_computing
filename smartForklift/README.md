@@ -1,1 +1,1 @@
-Smart forklift prototype
+IoT server prototype
