@@ -8,17 +8,12 @@ import os
 from . import smartForklift
 from settings import *
 
-def getConfig(placement_id=None):
-    dirname = os.path.dirname(os.path.realpath(__file__))
-    f = open(dirname + "/config.json")
+def getConfig(smartForklift_id=None):
+    dirname = os.path.dirname(os.path.realpath(__file__)) + DEVICES_DESCRIPTIONS_DIR
+    file = "{}/config_{}.json".format(dirname, smartForklift_id)
+    f = open(file)
     config = json.load(f)
-    if(placement_id is not None):
-
-        for e in config['placements']:
-            if(e['id'] == placement_id):
-                return e
-    else:
-        return config
+    return config
 
 def saveConfig(config):
     dirname = os.path.dirname(os.path.realpath(__file__)) + DEVICES_DESCRIPTIONS_DIR
@@ -37,7 +32,12 @@ def saveConfig(config):
 @smartForklift.route('/', methods=['GET', 'OPTIONS'])
 @libs.cors.crossdomain(origin='*')
 def index():
-    return "Smart forklift service active"
+    return "IoT Server: smart forklift service active"
+
+@smartForklift.route('/<int:id>', methods=['GET', 'OPTIONS'])
+@libs.cors.crossdomain(origin='*')
+def getConfigRoute(id):
+    return getConfig(id)
 
 @smartForklift.route('/publicConfig', methods=['POST', 'OPTIONS'])
 @libs.cors.crossdomain(origin='*')
