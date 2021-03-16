@@ -36,6 +36,7 @@ def getActions(id):
     res = []
     for k in keys:
         res.append(r.get(k))
+        r.delete(k)
     return res
 
 def saveAction(id, action_name, action_data={}, placement_id=None):
