@@ -44,4 +44,5 @@ XlsxWriter==1.3.7
 zeep==4.0.0
 smbus
 gpiozero
+redis
 

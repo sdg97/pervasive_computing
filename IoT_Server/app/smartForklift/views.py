@@ -7,6 +7,8 @@ import libs
 import os
 from . import smartForklift
 from settings import *
+import redis
+import time
 
 def getConfig(smartForklift_id=None):
     dirname = os.path.dirname(os.path.realpath(__file__)) + DEVICES_DESCRIPTIONS_DIR
@@ -28,6 +30,13 @@ def saveConfig(config):
     with open(file, 'w') as f:
         json.dump(config, f)
 
+def saveAction(id, action_data):
+    r = REDIS_INSTANCE
+    key = "smartForklift_{}_{}".format(id, time.time() * 1000)
+    value = json.dumps(action_data)
+    r.set(key, value)
+
+
 
 @smartForklift.route('/', methods=['GET', 'OPTIONS'])
 @libs.cors.crossdomain(origin='*')
@@ -46,21 +55,14 @@ def publicConfig():
     saveConfig(data)
     return "Config Saved"
     
-
-@smartForklift.route('/startUseSmartForklift', methods=['POST', 'OPTIONS'])
+@smartForklift.route('/<int:id>/startUse', methods=['POST', 'OPTIONS'])
 @libs.cors.crossdomain(origin='*')
-def startUseSmartForklift():
-    config = getConfig()
-    ledOn(config['ready_led_pin'])
-    ids = []
-    for placement in config['placements']:
-        ledOff(placement['ready_led_pin'])
-        ledOff(placement['catch_attention_led_pin'])
-        dc = placement['display_channel']
-        lcd_init(dc)
-        lcd_string("READY-TO-CONNECT",LCD_LINE_1,dc)
-        ids.append(placement['id'])
-    return flask.jsonify(ids)
+def startUseSmartForklift(id):
+    getConfig(id)
+    action_data = {}
+    action_data['action'] = "startUse"
+    saveAction(id, action_data)
+    return "Action saved"
 
 @smartForklift.route('/setPlacement', methods=['POST', 'OPTIONS'])
 @libs.cors.crossdomain(origin='*')
