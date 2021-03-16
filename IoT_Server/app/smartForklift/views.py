@@ -5,9 +5,8 @@ import flask
 import json
 import libs
 import os
-from devices.display import *
-from devices.led import *
 from . import smartForklift
+from settings import *
 
 def getConfig(placement_id=None):
     dirname = os.path.dirname(os.path.realpath(__file__))
@@ -21,10 +20,32 @@ def getConfig(placement_id=None):
     else:
         return config
 
+def saveConfig(config):
+    dirname = os.path.dirname(os.path.realpath(__file__)) + DEVICES_DESCRIPTIONS_DIR
+    file = "{}/config_{}.json".format(dirname, config['id'])
+    if not os.path.exists(os.path.dirname(file)):
+        try:
+            os.makedirs(os.path.dirname(file))
+        except OSError as exc: 
+            if exc.errno != errno.EEXIST:
+                raise
+
+    with open(file, 'w') as f:
+        json.dump(config, f)
+
+
 @smartForklift.route('/', methods=['GET', 'OPTIONS'])
 @libs.cors.crossdomain(origin='*')
 def index():
     return "Smart forklift service active"
+
+@smartForklift.route('/publicConfig', methods=['POST', 'OPTIONS'])
+@libs.cors.crossdomain(origin='*')
+def publicConfig():
+    data = flask.request.get_json()
+    saveConfig(data)
+    return "Config Saved"
+    
 
 @smartForklift.route('/startUseSmartForklift', methods=['POST', 'OPTIONS'])
 @libs.cors.crossdomain(origin='*')

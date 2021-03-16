@@ -1,0 +1,1 @@
+DEVICES_DESCRIPTIONS_DIR = '/descriptions'
