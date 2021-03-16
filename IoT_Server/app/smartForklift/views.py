@@ -30,6 +30,14 @@ def saveConfig(config):
     with open(file, 'w') as f:
         json.dump(config, f)
 
+def getActions(id):
+    r = REDIS_INSTANCE
+    keys = r.keys(pattern='smartForklift_{}_*'.format(id))
+    res = []
+    for k in keys:
+        res.append(r.get(k))
+    return res
+
 def saveAction(id, action_name, action_data={}, placement_id=None):
     action_data['action_name'] = action_name 
     if(placement_id is not None):
@@ -38,6 +46,7 @@ def saveAction(id, action_name, action_data={}, placement_id=None):
     key = "smartForklift_{}_{}".format(id, time.time() * 1000)
     value = json.dumps(action_data)
     r.set(key, value)
+
 
 @smartForklift.route('/', methods=['GET', 'OPTIONS'])
 @libs.cors.crossdomain(origin='*')
@@ -48,6 +57,11 @@ def index():
 @libs.cors.crossdomain(origin='*')
 def getConfigRoute(id):
     return getConfig(id)
+
+@smartForklift.route('/<int:id>/actions', methods=['GET', 'OPTIONS'])
+@libs.cors.crossdomain(origin='*')
+def getActionsRoute(id):
+    return flask.jsonify(getActions(id))
 
 @smartForklift.route('/publicConfig', methods=['POST', 'OPTIONS'])
 @libs.cors.crossdomain(origin='*')
