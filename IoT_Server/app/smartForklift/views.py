@@ -30,13 +30,14 @@ def saveConfig(config):
     with open(file, 'w') as f:
         json.dump(config, f)
 
-def saveAction(id, action_data):
+def saveAction(id, action_name, action_data={}, placement_id=None):
+    action_data['action_name'] = action_name 
+    if(placement_id is not None):
+        action_data['placement_id'] = placement_id  
     r = REDIS_INSTANCE
     key = "smartForklift_{}_{}".format(id, time.time() * 1000)
     value = json.dumps(action_data)
     r.set(key, value)
-
-
 
 @smartForklift.route('/', methods=['GET', 'OPTIONS'])
 @libs.cors.crossdomain(origin='*')
@@ -55,67 +56,28 @@ def publicConfig():
     saveConfig(data)
     return "Config Saved"
     
-@smartForklift.route('/<int:id>/startUse', methods=['POST', 'OPTIONS'])
+@smartForklift.route('/<int:id>/action/<string:action_name>', methods=['POST', 'OPTIONS'])
 @libs.cors.crossdomain(origin='*')
-def startUseSmartForklift(id):
+def smartForkliftAction(id, action_name):
     getConfig(id)
-    action_data = {}
-    action_data['action'] = "startUse"
-    saveAction(id, action_data)
+    ## Controllo se l'azione è concessa
+    if flask.request.get_json() is not None:
+        action_data = flask.request.get_json()
+        saveAction(id, action_name, action_data)
+    else:
+        saveAction(id, action_name)
     return "Action saved"
 
-@smartForklift.route('/setPlacement', methods=['POST', 'OPTIONS'])
-@libs.cors.crossdomain(origin='*')
-def setPlacement():
-    data = flask.request.get_json()
-    placement_id = data['placement_id']
-    order_id = data['order_id']
-    config = getConfig(placement_id)
-    dc = config['display_channel']
-    lcd_init(dc)
-    lcd_string("ORDER {}".format(order_id),LCD_LINE_1, dc)
-    lcd_string("PICKING",LCD_LINE_2, dc)
-    ledOn(config['ready_led_pin'])
-    return "ok"
 
-
-@smartForklift.route('/placements/<int:id>/putItHere', methods=['POST', 'OPTIONS'])
+@smartForklift.route('/<int:s_id>/placements/<int:p_id>/<string:action_name>', methods=['POST', 'OPTIONS'])
 @libs.cors.crossdomain(origin='*')
-def putItHere(id):
-    data = flask.request.get_json()
-    placement_id = id
-    product_code = data['product_code']
-    qty = data['qty']
-    config = getConfig(placement_id)
-    dc = config['display_channel']
-    lcd_init(dc)
-    lcd_string("{}".format(product_code),LCD_LINE_1, dc)
-    lcd_string("{}".format(qty),LCD_LINE_2, dc)
-    ledOn(config['catch_attention_led_pin'])
-    return "ok"
+def placementsAction(s_id, p_id, action_name):
+    getConfig(s_id)
+    ## Controllo se l'azione è concessa
+    if flask.request.get_json() is not None:
+        action_data = flask.request.get_json()
+        saveAction(s_id, action_name, action_data, p_id)
+    else:
+        saveAction(s_id, action_name, placement_id=p_id)
+    return "Action saved"
 
-@smartForklift.route('/placements/<int:id>/picked', methods=['POST', 'OPTIONS'])
-@libs.cors.crossdomain(origin='*')
-def picked(id):
-    data = flask.request.get_json()
-    placement_id = id
-    order_id = data['order_id']
-    config = getConfig(placement_id)
-    dc = config['display_channel']
-    lcd_init(dc)
-    lcd_string("ORDER {}".format(order_id),LCD_LINE_1, dc)
-    lcd_string("PICKING",LCD_LINE_2, dc)
-    ledOff(config['catch_attention_led_pin'])
-    return "ok"
-
-@smartForklift.route('/placements/<int:id>/orderDone', methods=['POST', 'OPTIONS'])
-@libs.cors.crossdomain(origin='*')
-def orderDone(id):
-    placement_id = id
-    placement = getConfig(placement_id)
-    dc = placement['display_channel']
-    lcd_init(dc)
-    lcd_string("READY-TO-CONNECT",LCD_LINE_1,dc)
-    ledOff(placement['ready_led_pin'])
-    ledOff(placement['catch_attention_led_pin'])
-    return "ok"
