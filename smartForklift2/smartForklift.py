@@ -4,6 +4,8 @@ import json
 import time
 
 last_update_time = time.time() * 1000
+update_interval = 2000
+sleep_time = 0.5
 
 def getConfig():
     dirname = os.path.dirname(os.path.realpath(__file__)) 
@@ -14,14 +16,15 @@ def getConfig():
 
 def application():
     print('--- FETCH DATA ---')
-    loop()
 
 def loop():
     global last_update_time
-    if(last_update_time - (time.time() * 1000)):
+    if((time.time() * 1000) - last_update_time >= update_interval):
         application()
         last_update_time = time.time() * 1000
+        loop()
     else:
+        time.sleep(sleep_time)
         loop()
 
 print('--- SMART FORKLIFT RUN ---')
