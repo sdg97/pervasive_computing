@@ -50,6 +50,8 @@ def application():
                 startUse(hw_s) 
             elif(a['action_name'] == 'setPlacement'):
                 setPlacement(hw_s, a)
+            elif(a['action_name'] == 'putItHere'):
+                putItHere(hw_s, a)
 
         
 

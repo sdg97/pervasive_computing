@@ -19,3 +19,14 @@ def setPlacement(hw_s, data):
     lcd_string("ORDER {}".format(order_id),LCD_LINE_1, dc)
     lcd_string("PICKING",LCD_LINE_2, dc)
     ledOn(config['ready_led_pin'])
+
+def putItHere(hw_s, data):
+    placement_id = data['placement_id']
+    product_code = data['product_code']
+    qty = data['qty']
+    config = hw_s['placements'][placement_id]
+    dc = config['display_channel']
+    lcd_init(dc)
+    lcd_string("{}".format(product_code),LCD_LINE_1, dc)
+    lcd_string("{}".format(qty),LCD_LINE_2, dc)
+    ledOn(config['catch_attention_led_pin'])
