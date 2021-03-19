@@ -1,11 +1,14 @@
-from devices import *
 import os
 import json
 import time
+import requests
+from actions import *
 
 last_update_time = time.time() * 1000
 update_interval = 2000
 sleep_time = 0.5
+restart_time_sleep = 2
+config = None
 
 def getConfig():
     dirname = os.path.dirname(os.path.realpath(__file__)) 
@@ -14,8 +17,39 @@ def getConfig():
     config = json.load(f)
     return config
 
+def publicMyself():
+    global config
+    print('------ PUBLIC THING DESCRIPTION ------')
+    IoTServerAddr = config['SERVER_ADDRESS']
+    print('DEBUG')
+    payload = {"placements": []}
+    for p in config['HARDWARE_SETTINGS']['placements']:
+        payload['placements'].append(p['id'])
+    payload['action'] = config['ACTIONS']
+    payload['id'] = config['ID']
+    headers = {'content-type': 'application/json'}
+    r = requests.post(IoTServerAddr+'/smartForklift/publicConfig', data=json.dumps(payload), headers = headers)
+    print(r)
+    print(r.status_code)
+    if(r.status_code != 200):
+        time.sleep(sleep_time)
+        publicMyself()
+
+
 def application():
+    global config
     print('--- FETCH DATA ---')
+    r = requests.get('{}/smartForklift/{}/actions'.format(config['SERVER_ADDRESS'], config['ID']))
+    if(r.status_code == 200):
+        actions = r.json()
+        for a in actions:
+            if(a['action_name'] == 'startUse'):
+                startUse(config['HARDWARE_SETTINGS']) 
+            elif(a['action_name'] == 'setPlacement'):
+                setPlacement(data)
+
+        
+
 
 def loop():
     global last_update_time
@@ -27,13 +61,24 @@ def loop():
         time.sleep(sleep_time)
         loop()
 
-print('--- SMART FORKLIFT RUN ---')
-print('..........................')
-print('-------- GET CONFIG ------')
-config = getConfig()
-print(config)
+def init():
+    global config
+    try:
+        print('--- SMART FORKLIFT RUN ---')
+        print('..........................')
+        print('-------- GET CONFIG ------')
+        config = getConfig()
+        print(config)
+        publicMyself()
+        loop()
+    except Exception as e:
+        print('Some error occurred')
+        print(e)
+        time.sleep(restart_time_sleep)
+        init()
 
-loop()
+init()
+    
 
 
 
