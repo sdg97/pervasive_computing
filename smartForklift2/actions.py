@@ -40,3 +40,12 @@ def picked(hw_s, data):
     lcd_string("ORDER {}".format(order_id),LCD_LINE_1, dc)
     lcd_string("PICKING",LCD_LINE_2, dc)
     ledOff(config['catch_attention_led_pin'])
+
+def orderDone(hw_s, data):
+    placement_id = data['placement_id']
+    config = hw_s['placements'][placement_id]
+    dc = placement['display_channel']
+    lcd_init(dc)
+    lcd_string("READY-TO-CONNECT",LCD_LINE_1,dc)
+    ledOff(placement['ready_led_pin'])
+    ledOff(placement['catch_attention_led_pin'])

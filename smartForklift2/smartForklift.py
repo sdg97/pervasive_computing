@@ -54,6 +54,8 @@ def application():
                 putItHere(hw_s, a)
             elif(a['action_name'] == 'picked'):
                 picked(hw_s, a)
+            elif(a['action_name'] == 'orderDone'):
+                orderDone(hw_s, a)
 
         
 
