@@ -21,7 +21,6 @@ def publicMyself():
     global config
     print('------ PUBLIC THING DESCRIPTION ------')
     IoTServerAddr = config['SERVER_ADDRESS']
-    print('DEBUG')
     payload = {"placements": []}
     for p in config['HARDWARE_SETTINGS']['placements']:
         payload['placements'].append(p['id'])
@@ -29,8 +28,6 @@ def publicMyself():
     payload['id'] = config['ID']
     headers = {'content-type': 'application/json'}
     r = requests.post(IoTServerAddr+'/smartForklift/publicConfig', data=json.dumps(payload), headers = headers)
-    print(r)
-    print(r.status_code)
     if(r.status_code != 200):
         time.sleep(sleep_time)
         publicMyself()
@@ -56,9 +53,6 @@ def application():
                 picked(hw_s, a)
             elif(a['action_name'] == 'orderDone'):
                 orderDone(hw_s, a)
-
-        
-
 
 def loop():
     global last_update_time
