@@ -42,11 +42,14 @@ def application():
     r = requests.get('{}/smartForklift/{}/actions'.format(config['SERVER_ADDRESS'], config['ID']))
     if(r.status_code == 200):
         actions = r.json()
+        hw_s = config['HARDWARE_SETTINGS']
         for a in actions:
+            print('---- ACTION TO DO -----')
+            print(a)
             if(a['action_name'] == 'startUse'):
-                startUse(config['HARDWARE_SETTINGS']) 
+                startUse(hw_s) 
             elif(a['action_name'] == 'setPlacement'):
-                setPlacement(data)
+                setPlacement(hw_s, a)
 
         
 

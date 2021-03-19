@@ -9,3 +9,13 @@ def startUse(config):
         dc = placement['display_channel']
         lcd_init(dc)
         lcd_string("READY-TO-CONNECT",LCD_LINE_1,dc)
+
+def setPlacement(hw_s, data):
+    placement_id = data['placement_id']
+    order_id = data['order_id']
+    config = hw_s['placements'][placement_id]
+    dc = config['display_channel']
+    lcd_init(dc)
+    lcd_string("ORDER {}".format(order_id),LCD_LINE_1, dc)
+    lcd_string("PICKING",LCD_LINE_2, dc)
+    ledOn(config['ready_led_pin'])
