@@ -1,1 +1,1 @@
-{"id": 1, "actions": ["startUseSmartForklift", "setPlacement", "putItHere", "picked", "orderDone"], "property": {"placements": [1, 2]}}
+{"placements": [1, 2], "action": [], "id": 1}

@@ -19,6 +19,8 @@ def getConfig(smartForklift_id=None):
 
 def saveConfig(config):
     dirname = os.path.dirname(os.path.realpath(__file__)) + DEVICES_DESCRIPTIONS_DIR
+    print(' ----- config ---- ')
+    print(config)
     file = "{}/config_{}.json".format(dirname, config['id'])
     if not os.path.exists(os.path.dirname(file)):
         try:
@@ -35,7 +37,7 @@ def getActions(id):
     keys = r.keys(pattern='smartForklift_{}_*'.format(id))
     res = []
     for k in keys:
-        res.append(r.get(k))
+        res.append(json.loads(r.get(k)))
         r.delete(k)
     return res
 
