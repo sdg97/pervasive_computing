@@ -43,7 +43,7 @@ def picked(hw_s, data):
 
 def orderDone(hw_s, data):
     placement_id = data['placement_id']
-    config = hw_s['placements'][placement_id]
+    placement = hw_s['placements'][placement_id]
     dc = placement['display_channel']
     lcd_init(dc)
     lcd_string("READY-TO-CONNECT",LCD_LINE_1,dc)
