@@ -52,6 +52,8 @@ def application():
                 setPlacement(hw_s, a)
             elif(a['action_name'] == 'putItHere'):
                 putItHere(hw_s, a)
+            elif(a['action_name'] == 'picked'):
+                picked(hw_s, a)
 
         
 

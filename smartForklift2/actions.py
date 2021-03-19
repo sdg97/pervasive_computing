@@ -30,3 +30,13 @@ def putItHere(hw_s, data):
     lcd_string("{}".format(product_code),LCD_LINE_1, dc)
     lcd_string("{}".format(qty),LCD_LINE_2, dc)
     ledOn(config['catch_attention_led_pin'])
+
+def picked(hw_s, data):
+    placement_id = data['placement_id']
+    order_id = data['order_id']
+    config = hw_s['placements'][placement_id]
+    dc = config['display_channel']
+    lcd_init(dc)
+    lcd_string("ORDER {}".format(order_id),LCD_LINE_1, dc)
+    lcd_string("PICKING",LCD_LINE_2, dc)
+    ledOff(config['catch_attention_led_pin'])
