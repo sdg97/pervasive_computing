@@ -3,11 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.vuzix.sample.barcode_scan">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <application
         android:allowBackup="true"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@android:style/Theme.Material">
+        <activity
+            android:name="it.unibo.vuzix.activities.ConnectionActivity"
+            android:label="@string/title_activity_connection"
+            android:theme="@style/@android:style/Theme.Material.NoActionBar"></activity>
         <activity
             android:name=".MainActivity"
             android:label="@string/main_activity_name"
@@ -20,8 +25,8 @@
             </intent-filter>
         </activity>
     </application>
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.CAMERA" />
 
 </manifest>

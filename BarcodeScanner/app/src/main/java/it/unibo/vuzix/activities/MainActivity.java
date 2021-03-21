@@ -30,7 +30,7 @@ Copyright (c) 2018, Vuzix Corporation
         EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **************************************************************************************/
 
-package com.vuzix.sample.barcode_scan;
+package it.unibo.vuzix.activities;
 
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
@@ -38,25 +38,28 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.vuzix.sample.barcode_scan.R;
 import com.vuzix.sdk.barcode.ScanResult;
 import com.vuzix.sdk.barcode.ScannerFragment;
 import com.vuzix.sdk.barcode.ScanningRect;
 
+import it.unibo.vuzix.barcode_scan.ScanResultFragment;
+
 /**
  * The main activity for the Vuzix M300 barcode sample application
  */
-public class MainActivity extends Activity /*implements View.OnClickListener*/{
+public class MainActivity extends Activity implements View.OnClickListener{
 
     private static final String TAG_PERMISSIONS_FRAGMENT = "permissions";
 
-    //private View scanInstructionsView;
-    private View textView;
+    private View textView; //TODO delete
     private ScannerFragment.Listener mScannerListener;
-    /*Button mButton1;
-    Button mButton2;*/
-
+    private Button continueButton;
+    private Button exitButton;
+    private TextView initInstruction;
 
     /**
      * One-time initialization. Sets up the view and the permissions.
@@ -77,14 +80,13 @@ public class MainActivity extends Activity /*implements View.OnClickListener*/{
         scanInstructionsView.setVisibility(View.GONE);*/
         textView = findViewById(R.id.textView);
         textView.setVisibility(View.GONE);
-
+        continueButton=findViewById(R.id.button1);
+        continueButton.setVisibility(View.INVISIBLE); //TODO differenza con GONE?!
+        exitButton=findViewById(R.id.button2);
+        exitButton.setVisibility(View.INVISIBLE);//TODO differenza con GONE?!
+        initInstruction = findViewById(R.id.textView1);
+        initInstruction.setVisibility(View.INVISIBLE);
         //setContentView(R.layout.fragment_init);
-
-//        mButton1 = findViewById(R.id.button1);
-//        mButton1.setOnClickListener(this);
-//
-//        mButton2 = findViewById(R.id.button3);
-//        mButton2.setOnClickListener(this);
 
         creeateScannerListener();
         showScanner();
@@ -111,9 +113,7 @@ public class MainActivity extends Activity /*implements View.OnClickListener*/{
                     onScanFragmentError();
                 }
             }
-
             mScannerListener = new OurScannerListener();
-
         } catch (NoClassDefFoundError e) {
             // We get this exception if the SDK stubs against which we compiled cannot be resolved
             // at runtime. This occurs if the code is not being run on an M300 supporting the voice
@@ -168,9 +168,6 @@ public class MainActivity extends Activity /*implements View.OnClickListener*/{
         textView.setVisibility(View.VISIBLE);
     }
 
-
-
-
     /**
      * Helper method to show a scan result
      *
@@ -188,8 +185,8 @@ public class MainActivity extends Activity /*implements View.OnClickListener*/{
         scanResultFragment.setArguments(args);
         getFragmentManager().beginTransaction().replace(R.id.fragment_container, scanResultFragment).commit();
         //beep();
+        //TODO far vibrare gli occhiali
     }
-
 
 
     /**
@@ -211,19 +208,19 @@ public class MainActivity extends Activity /*implements View.OnClickListener*/{
     private boolean isScanResultShowing() {
         return getFragmentManager().findFragmentById(R.id.fragment_container) instanceof ScanResultFragment;
     }
-/*
-    @Override
+
+    //@Override
     public void onClick(View view) {
         if (view.getId() == R.id.button1) {
-            Toast.makeText(MainActivity.this,
+            /*Toast.makeText(MainActivity.this,
                     getResources().getString(R.string.MessageBtn1),
-                    Toast.LENGTH_SHORT).show();
-        } else if (view.getId() == R.id.button3) {
-            Toast.makeText(MainActivity.this,
+                    Toast.LENGTH_SHORT).show();*/
+        } else if (view.getId() == R.id.button2) {
+            /*Toast.makeText(MainActivity.this,
                     getResources().getString(R.string.MessageBtn3),
-                    Toast.LENGTH_SHORT).show();
+                    Toast.LENGTH_SHORT).show();*/
         }
-    }*/
+    }
 
     /**
      * A best practice is to give some audible feedback during scan operations. This beeps.

@@ -29,7 +29,7 @@
  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  **************************************************************************************/
-package com.vuzix.sample.barcode_scan;
+package it.unibo.vuzix.barcode_scan;
 
 import android.content.Context;
 import android.graphics.Bitmap;

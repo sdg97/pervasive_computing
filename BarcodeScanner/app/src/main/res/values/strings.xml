@@ -42,4 +42,7 @@ Copyright (c) 2018, Vuzix Corporation
     <string name="not_focusable_textview">Press continue when you are ready</string>
     <string name="MessageBtn1">Continue</string>
     <string name="MessageBtn3">Exit</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
 </resources>
