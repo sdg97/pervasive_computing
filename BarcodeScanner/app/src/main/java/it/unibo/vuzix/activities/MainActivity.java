@@ -33,6 +33,8 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package it.unibo.vuzix.activities;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -52,7 +54,6 @@ public class MainActivity extends Activity  implements View.OnClickListener {
         mButton1 = findViewById(R.id.button1);
         mButton1.setOnClickListener(this);
 
-
         mButton2 = findViewById(R.id.button2);
         mButton2.setOnClickListener(this);
 
@@ -69,7 +70,29 @@ public class MainActivity extends Activity  implements View.OnClickListener {
         } else if (view.getId() == R.id.button2) {
             Toast.makeText(MainActivity.this, getResources().getString(R.string.MessageBtn2), Toast.LENGTH_SHORT).show();
         } else if (view.getId() == R.id.button3) {
-            Toast.makeText(MainActivity.this, getResources().getString(R.string.MessageBtn3), Toast.LENGTH_SHORT).show();
+            System.out.println("Press Button to exit");
+            AlertDialog.Builder ab = new AlertDialog.Builder(MainActivity.this);
+            ab.setTitle("myDialog");
+            ab.setMessage("Are you sure to exit?");
+            ab.setPositiveButton("yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    //if you want to kill app . from other then your main avtivity.(Launcher)
+                    android.os.Process.killProcess(android.os.Process.myPid());
+                    System.exit(1);
+                    //if you want to finish just current activity
+                    MainActivity.this.finish();
+                }
+            });
+            ab.setNegativeButton("no", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            ab.show();
+            //Toast.makeText(MainActivity.this, getResources().getString(R.string.MessageBtn3), Toast.LENGTH_SHORT).show();
         }
     }
     private <T> void launchActivity(Class<T> clazz) {

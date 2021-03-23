@@ -52,8 +52,6 @@ public class InitFragment extends Fragment {
             ScanResult scanResult = args.getParcelable(ARG_SCAN_RESULT);
             bitmap.setImageBitmap((Bitmap)args.getParcelable(ARG_BITMAP));
             bitmap.setLocation(scanResult.getLocation());
-            //text.setText(scanResult.getText());
-            //text2.setText("Ciao Mare!");MUORE
         }
     }
 
