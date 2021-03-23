@@ -39,26 +39,24 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 public class MainActivity extends Activity  implements View.OnClickListener {
-    Button mButton1;
-    Button mButton2;
-    Button mButton3;
+    Button connectBoxButton;
+    Button exitButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mButton1 = findViewById(R.id.button1);
-        mButton1.setOnClickListener(this);
+        connectBoxButton = findViewById(R.id.button1);
+        connectBoxButton.setOnClickListener(this);
+        connectBoxButton.setOnClickListener(v -> {
+            System.out.println(v);
+        });
 
-        mButton2 = findViewById(R.id.button2);
-        mButton2.setOnClickListener(this);
-
-        mButton3 = findViewById(R.id.button3);
-        mButton3.setOnClickListener(this);
+        exitButton = findViewById(R.id.button3);
+        exitButton.setOnClickListener(this);
     }
 
     @Override
@@ -67,8 +65,6 @@ public class MainActivity extends Activity  implements View.OnClickListener {
             //Toast.makeText(MainActivity.this, getResources().getString(R.string.MessageBtn1), Toast.LENGTH_SHORT).show();
             System.out.println("Press Button to connect");
             launchActivity(ConnectActivity.class);
-        } else if (view.getId() == R.id.button2) {
-            Toast.makeText(MainActivity.this, getResources().getString(R.string.MessageBtn2), Toast.LENGTH_SHORT).show();
         } else if (view.getId() == R.id.button3) {
             System.out.println("Press Button to exit");
             AlertDialog.Builder ab = new AlertDialog.Builder(MainActivity.this);
@@ -95,6 +91,7 @@ public class MainActivity extends Activity  implements View.OnClickListener {
             //Toast.makeText(MainActivity.this, getResources().getString(R.string.MessageBtn3), Toast.LENGTH_SHORT).show();
         }
     }
+
     private <T> void launchActivity(Class<T> clazz) {
         startActivity(new Intent(this, clazz));
     }
