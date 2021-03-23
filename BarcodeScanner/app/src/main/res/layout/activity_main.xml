@@ -1,60 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+
+    <LinearLayout
+        android:layout_width="320dp"
+        android:layout_height="65dp"
+        android:layout_below="@+id/textView1"
+        android:layout_marginTop="60dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/button1"
+            android:layout_width="@dimen/ButtonWidth"
+            android:layout_height="@dimen/ButtonHeight"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/custom_button"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:text="@string/connectButton" />
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="@dimen/ButtonWidth"
+            android:layout_height="@dimen/ButtonHeight"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/custom_button"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:text="@string/continueButton" />
+
+        <Button
+            android:id="@+id/button3"
+            android:layout_width="@dimen/ButtonWidth"
+            android:layout_height="@dimen/ButtonHeight"
+            android:background="@drawable/custom_button"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:text="@string/exitButton">
+
+            <requestFocus />
+        </Button>
+
+    </LinearLayout>
+
     <TextView
         android:id="@+id/textView1"
-        android:layout_width="223dp"
-        android:layout_height="26dp"
-        android:layout_marginStart="150dp"
-        android:layout_marginTop="100dp"
+        android:layout_width="match_parent"
+        android:layout_height="38dp"
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:gravity="center_horizontal"
         android:text="@string/not_focusable_textview"
+        android:textSize="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/button1"
-        android:layout_width="@dimen/ButtonWidth"
-        android:layout_height="@dimen/ButtonHeight"
-        android:layout_marginTop="@dimen/ButtonMargin"
-        android:background="@drawable/custom_button"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:text="@string/connectButton"
-        app:layout_constraintStart_toStartOf="@+id/textView1"
-        app:layout_constraintTop_toBottomOf="@+id/textView1" />
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView1"
+        android:layout_marginTop="206dp"
+        android:gravity="center_horizontal"
+        android:text="Ciao proova last raw" />
 
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="@dimen/ButtonWidth"
-        android:layout_height="@dimen/ButtonHeight"
-        android:layout_marginTop="@dimen/ButtonMargin"
-        android:background="@drawable/custom_button"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:text="@string/continueButton"
-        app:layout_constraintStart_toStartOf="@+id/textView1"
-        app:layout_constraintTop_toBottomOf="@+id/button1" />
 
-    <Button
-        android:id="@+id/button3"
-        android:layout_width="@dimen/ButtonWidth"
-        android:layout_height="@dimen/ButtonHeight"
-        android:layout_marginTop="@dimen/ButtonMargin"
-        android:background="@drawable/custom_button"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:text="@string/exitButton"
-        app:layout_constraintStart_toStartOf="@+id/textView1"
-        app:layout_constraintTop_toBottomOf="@+id/button2">
-        <requestFocus />
-    </Button>
-
-</android.support.constraint.ConstraintLayout>
+</RelativeLayout>
