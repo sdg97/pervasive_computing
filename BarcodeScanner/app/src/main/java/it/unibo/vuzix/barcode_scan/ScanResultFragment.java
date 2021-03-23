@@ -38,9 +38,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import com.vuzix.sample.barcode_scan.R;
 import com.vuzix.sdk.barcode.ScanResult;
+
+import it.unibo.vuzix.activities.R;
 
 /**
  * A fragment to show the result of the barcode scan

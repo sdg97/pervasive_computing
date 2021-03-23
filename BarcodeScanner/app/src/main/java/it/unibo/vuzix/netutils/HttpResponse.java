@@ -1,40 +1,50 @@
 package it.unibo.vuzix.netutils;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
-public class HttpResponse {
+public class HttpResponse<T> {
     private int code;
-    private InputStream response;
+    private String codeName;
+    private T result;
 
-    public HttpResponse(final int code, final InputStream response){
-        this.code = code;
-        this.response = response;
+    public static <T> HttpResponse<T> success(int code, T result) {
+        return new HttpResponse<>(
+                code,
+                "",
+                result
+        );
     }
 
-    public int code(){
+    public static <T> HttpResponse<T> fail(int code, String errorMessage) {
+        return new HttpResponse<>(
+                200,
+                errorMessage,
+                null
+        );
+    }
+
+    public static <T> HttpResponse<T> from(int code, String codeName, T result) {
+        return new HttpResponse<>(code, codeName, result);
+    }
+
+
+    protected HttpResponse(int code, String codeName, T result) {
+        this.code = code;
+        this.codeName = codeName;
+        this.result = result;
+    }
+
+    public boolean isSuccess() {
+        return getCode() >= 200 && getCode() < 300;
+    }
+
+    public int getCode() {
         return code;
     }
 
-    public InputStream content(){
-        return response;
+    public String getCodeName() {
+        return codeName;
     }
 
-    public String contentAsString() throws IOException {
-        return readStream(response);
-    }
-
-    private String readStream(final InputStream in) throws IOException {
-        final StringBuilder response = new StringBuilder();
-
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                response.append(line);
-            }
-        }
-
-        return response.toString();
+    public T getResult() {
+        return result;
     }
 }

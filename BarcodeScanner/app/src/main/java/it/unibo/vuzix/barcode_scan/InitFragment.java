@@ -7,9 +7,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import com.vuzix.sample.barcode_scan.R;
 import com.vuzix.sdk.barcode.ScanResult;
+import it.unibo.vuzix.activities.R;
+
+import static it.unibo.vuzix.activities.R.*;
+
 
 public class InitFragment extends Fragment {
 
@@ -28,7 +30,7 @@ public class InitFragment extends Fragment {
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_result, container, false);
+        return inflater.inflate(layout.fragment_result, container, false);
     }
 
     /**
@@ -39,9 +41,9 @@ public class InitFragment extends Fragment {
      */
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        ScanResultImageView bitmap = (ScanResultImageView)view.findViewById(R.id.bitmap);
+        ScanResultImageView bitmap = (ScanResultImageView)view.findViewById(id.bitmap);
         //TextView text = (TextView)view.findViewById(R.id.text);
-        TextView text2 = (TextView)view.findViewById(R.id.textView);
+        TextView text2 = (TextView)view.findViewById(id.textView);
 
         // The arguments Bundle gives us the bitmap that was taken upon recognition of a barcode, and
         // the text extracted from the barcode within the image

@@ -25,7 +25,7 @@
         android:background="@drawable/custom_button"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:text="@string/focusable_1"
+        android:text="@string/connectButton"
         app:layout_constraintStart_toStartOf="@+id/textView1"
         app:layout_constraintTop_toBottomOf="@+id/textView1" />
 
@@ -38,7 +38,7 @@
         android:background="@drawable/custom_button"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:text="@string/focusable_2"
+        android:text="@string/continueButton"
         app:layout_constraintLeft_toRightOf="@+id/button1"
         app:layout_constraintTop_toBottomOf="@+id/textView1">
 
