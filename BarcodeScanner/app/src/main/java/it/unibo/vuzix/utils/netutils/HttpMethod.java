@@ -1,4 +1,4 @@
-package it.unibo.vuzix.netutils;
+package it.unibo.vuzix.utils.netutils;
 
 public enum HttpMethod {
     GET("GET"),

@@ -1,4 +1,4 @@
-package it.unibo.vuzix.netutils;
+package it.unibo.vuzix.utils.netutils;
 
 public class HttpResponse<T> {
     private int code;

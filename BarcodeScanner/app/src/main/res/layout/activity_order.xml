@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ConnectActivity">
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".OrderActivity">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/textView3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:text="Scan the bar code on the box"
+        android:text="Scan the bar code of the order"
         android:textSize="24dp" />
 
     <EditText
-        android:id="@+id/barcodetext"
+        android:id="@+id/barcodeOrder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="100dp"
         android:ems="10"
         android:inputType="text"
         android:text="">
-        <requestFocus />
+    <requestFocus />
     </EditText>
 
     <LinearLayout
@@ -34,24 +34,24 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/button"
+            android:id="@+id/button5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:background="@drawable/custom_button"
             android:focusable="true"
             android:focusableInTouchMode="true"
-            android:text="@string/ok" />
+            android:text="@string/ok"/>
 
         <Button
-            android:id="@+id/button4"
+            android:id="@+id/button6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:background="@drawable/custom_button"
             android:focusable="true"
             android:focusableInTouchMode="true"
-            android:text="@string/back" />
-
-
+            android:text="@string/back"/>
     </LinearLayout>
 
 

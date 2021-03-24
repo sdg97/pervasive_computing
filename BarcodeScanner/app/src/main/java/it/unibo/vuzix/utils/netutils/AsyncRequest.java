@@ -1,4 +1,4 @@
-package it.unibo.vuzix.netutils;
+package it.unibo.vuzix.utils.netutils;
 
 import android.os.AsyncTask;
 

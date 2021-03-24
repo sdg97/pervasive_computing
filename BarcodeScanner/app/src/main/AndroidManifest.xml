@@ -14,7 +14,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".ConnectActivity"></activity>
-
+        <activity android:name=".OrderActivity"></activity>
+        <activity android:name=".ShowLocationActivity"></activity>
     </application>
 
     <uses-permission android:name="android.permission.CAMERA" />

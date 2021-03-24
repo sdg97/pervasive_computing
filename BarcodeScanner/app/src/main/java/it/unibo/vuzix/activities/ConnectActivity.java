@@ -1,8 +1,11 @@
 package it.unibo.vuzix.activities;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -19,18 +22,42 @@ public class ConnectActivity extends Activity { //implements AsyncRequest.AsyncR
 
         confirmButton = findViewById(R.id.button);
         confirmButton.setOnClickListener(v -> {
-            System.out.println("confirm");
+            System.out.println("Confirm");
+            Editable code = editText.getText();
+            //todo partire chiamata di richiesta di connessione al box
+            //todo popup o testo di conferma poi cambio schermata
+            launchActivity(OrderActivity.class);
         });
         confirmButton.setEnabled(false);
 
         backButton = findViewById(R.id.button4);
         backButton.setOnClickListener(v -> {
             System.out.println("back");
+            //TODO It's right?!?!?
+            ConnectActivity.this.finish();
+            setContentView(R.layout.activity_main);
         });
 
         editText = findViewById(R.id.barcodetext);
-        editText.setOnClickListener(v -> confirmButton.setEnabled(true));
+        editText.addTextChangedListener(new TextWatcher() {
 
+            @Override
+            public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.length() != 0)
+                    confirmButton.setEnabled(true);
+            }
+        });
+    }
+
+    private <T> void launchActivity(Class<T> clazz) {
+        startActivity(new Intent(this, clazz));
     }
 
 }
