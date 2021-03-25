@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/textView1"
+        android:gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:text="@string/not_focusable_textview"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="@dimen/ButtonWidth"
+        android:layout_height="@dimen/ButtonHeight"
+        android:layout_marginStart="96dp"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/custom_button"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:text="@string/focusable_1"
+        app:layout_constraintStart_toStartOf="@+id/textView1"
+        app:layout_constraintTop_toBottomOf="@+id/textView1" />
+
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="@dimen/ButtonWidth"
+        android:layout_height="@dimen/ButtonHeight"
+        android:layout_marginLeft="104dp"
+        android:layout_marginTop="32dp"
+        android:background="@drawable/custom_button"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:text="@string/focusable_2"
+        app:layout_constraintLeft_toRightOf="@+id/button1"
+        app:layout_constraintTop_toBottomOf="@+id/textView1">
+
+        <requestFocus />
+    </Button>
+
+</android.support.constraint.ConstraintLayout>
