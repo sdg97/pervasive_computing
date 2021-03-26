@@ -23,7 +23,9 @@
             android:background="@drawable/custom_button"
             android:focusable="true"
             android:focusableInTouchMode="true"
-            android:text="@string/connectButton" />
+            android:text="@string/connectButton" >
+            <requestFocus />
+        </Button>
 
         <Button
             android:id="@+id/exitButton"
@@ -34,7 +36,7 @@
             android:focusableInTouchMode="true"
             android:text="@string/exitButton">
 
-            <requestFocus />
+
         </Button>
 
     </LinearLayout>

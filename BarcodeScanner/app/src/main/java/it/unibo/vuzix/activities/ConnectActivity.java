@@ -52,6 +52,8 @@ public class ConnectActivity extends Activity { //implements AsyncRequest.AsyncR
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if(s.length() != 0)
                     confirmButton.setEnabled(true);
+                else
+                    confirmButton.setEnabled(false);
             }
         });
     }

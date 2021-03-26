@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:text="Scan the bar code of the order"
+        android:text="Scan the bar code of the ORDER"
         android:textSize="24dp" />
 
     <EditText
