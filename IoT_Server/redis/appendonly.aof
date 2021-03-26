@@ -1,0 +1,46 @@
+*2
+$6
+SELECT
+$1
+0
+*3
+$3
+SET
+$33
+smartForklift_1_1616776838393.627
+$66
+{"placement_id": 1, "order_id": 447499, "action_name": "startUse"}
+*3
+$3
+SET
+$34
+smartForklift_1_1616776839123.6355
+$66
+{"placement_id": 1, "order_id": 447499, "action_name": "startUse"}
+*3
+$3
+SET
+$34
+smartForklift_1_1616776840081.6858
+$66
+{"placement_id": 1, "order_id": 447499, "action_name": "startUse"}
+*2
+$6
+SELECT
+$1
+0
+*2
+$3
+DEL
+$34
+smartForklift_1_1616776840081.6858
+*2
+$3
+DEL
+$34
+smartForklift_1_1616776839123.6355
+*2
+$3
+DEL
+$33
+smartForklift_1_1616776838393.627
