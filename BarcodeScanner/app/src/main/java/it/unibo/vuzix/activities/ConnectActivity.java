@@ -9,6 +9,18 @@ import android.text.TextWatcher;
 import android.widget.Button;
 import android.widget.EditText;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+
 public class ConnectActivity extends Activity { //implements AsyncRequest.AsyncRequestListener {
 
     private Button confirmButton;
