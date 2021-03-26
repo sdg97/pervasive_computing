@@ -13,8 +13,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import it.unibo.vuzix.utils.Utility;
-
 public class OrderActivity extends Activity implements View.OnClickListener {
     private Button confirmButton;
     private Button backButton;
@@ -27,10 +25,12 @@ public class OrderActivity extends Activity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order);
 
-        confirmButton = findViewById(R.id.button5);
+        confirmButton = findViewById(R.id.confermOrderButton);
         confirmButton.setEnabled(false);
+        confirmButton.setOnClickListener(this);
 
         backButton = findViewById(R.id.button6);
+        backButton.setOnClickListener(this);
 
         editText = findViewById(R.id.barcodeOrder);
         editText.addTextChangedListener(new TextWatcher() {
@@ -55,11 +55,12 @@ public class OrderActivity extends Activity implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-        if (view.getId() == R.id.button5) { //CONFERM
+        if (view.getId() == R.id.confermOrderButton) { //CONFERM
             System.out.println("Ok");
             Editable code = editText.getText();
             //todo partire chiamata di richiesta di connessione all'ordine
             //todo popup o testo di conferma poi cambio schermata
+            numOrder++;
             if (numOrder < MAXORDER){
                 AlertDialog.Builder ab = new AlertDialog.Builder(OrderActivity.this);
                 ab.setTitle("Would you add an other order?");
@@ -69,6 +70,7 @@ public class OrderActivity extends Activity implements View.OnClickListener {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                         //todo reload the same activity
+                        editText.setText("");
                     }
                 });
                 ab.setNegativeButton("no", new DialogInterface.OnClickListener() {
@@ -82,8 +84,8 @@ public class OrderActivity extends Activity implements View.OnClickListener {
                 ab.show();
             } else {
                 Toast.makeText(OrderActivity.this, "You have reached the maximum number of orders that can be managed", Toast.LENGTH_SHORT).show();
-                OrderActivity.this.finish();
                 launchActivity(ShowLocationActivity.class);
+                //OrderActivity.this.finish();
             }
 
         } else if (view.getId() == R.id.button6) { //BACK

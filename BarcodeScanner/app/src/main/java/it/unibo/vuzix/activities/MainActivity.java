@@ -49,23 +49,20 @@ public class MainActivity extends Activity  implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        connectBoxButton = findViewById(R.id.button1);
+        connectBoxButton = findViewById(R.id.boxConnectButton);
         connectBoxButton.setOnClickListener(this);
-        connectBoxButton.setOnClickListener(v -> {
-            System.out.println(v);
-        });
 
-        exitButton = findViewById(R.id.button3);
+        exitButton = findViewById(R.id.exitButton);
         exitButton.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View view) {
-        if (view.getId() == R.id.button1) {
+        if (view.getId() == R.id.boxConnectButton) {
             //Toast.makeText(MainActivity.this, getResources().getString(R.string.MessageBtn1), Toast.LENGTH_SHORT).show();
             System.out.println("Press Button to connect");
             launchActivity(ConnectActivity.class);
-        } else if (view.getId() == R.id.button3) {
+        } else if (view.getId() == R.id.exitButton) {
             System.out.println("Press Button to exit");
             AlertDialog.Builder ab = new AlertDialog.Builder(MainActivity.this);
             ab.setTitle("myDialog");
