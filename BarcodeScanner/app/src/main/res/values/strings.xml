@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Vuzix Barcode Sample</string>
+    <string name="app_name">Vuzix Barcode</string>
     <string name="main_activity_name">Barcode</string>
     <string name="grant_camera_permission">To use the barcode scanner, please grant camera permissions and try again.</string>
     <string name="scanner_error_message">Unable to open scanner!</string>

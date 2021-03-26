@@ -18,7 +18,7 @@ public class OrderActivity extends Activity implements View.OnClickListener {
     private Button backButton;
     private EditText editText;
     private int numOrder = 0;
-    private int MAXORDER = 2;
+    private static final int MAXORDER = 2;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -29,7 +29,7 @@ public class OrderActivity extends Activity implements View.OnClickListener {
         confirmButton.setEnabled(false);
         confirmButton.setOnClickListener(this);
 
-        backButton = findViewById(R.id.button6);
+        backButton = findViewById(R.id.backButtonOrder);
         backButton.setOnClickListener(this);
 
         editText = findViewById(R.id.barcodeOrder);
@@ -45,6 +45,8 @@ public class OrderActivity extends Activity implements View.OnClickListener {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if(s.length() != 0)
                     confirmButton.setEnabled(true);
+                else
+                    confirmButton.setEnabled(false);
             }
         });
     }
@@ -88,7 +90,7 @@ public class OrderActivity extends Activity implements View.OnClickListener {
                 //OrderActivity.this.finish();
             }
 
-        } else if (view.getId() == R.id.button6) { //BACK
+        } else if (view.getId() == R.id.backButtonOrder) { //BACK
             System.out.println("back");
             //TODO It's right?!?!?
             OrderActivity.this.finish();
