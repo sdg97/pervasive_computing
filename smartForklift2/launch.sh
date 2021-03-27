@@ -1,1 +1,1 @@
-pip3 install -r requirements-lock.txt && python3 smartForklift.py
+python3 ./smartForklift.py &> log.txt

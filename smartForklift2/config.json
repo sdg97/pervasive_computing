@@ -19,6 +19,6 @@
         ]
     },
     "ACTIONS": [],
-    "SERVER_ADDRESS": "http://192.168.0.182:5000",
+    "SERVER_ADDRESS": "http://192.168.43.19:5000",
     "INTERVAL": 1000
 }
