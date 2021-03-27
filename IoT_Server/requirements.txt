@@ -1,9 +1,7 @@
 Flask
 Flask-Caching
 Whoosh
-paypalrestsdk
 pyjwt
-PyMySQL
 python-tds
 pytz
 python-dateutil
@@ -13,10 +11,11 @@ html2text
 boto3
 XlsxWriter
 schwifty
-Babel
 pycountry
-smbus
-gpiozero
-
 
 gunicorn
+
+
+smbus
+gpiozero
+redis
