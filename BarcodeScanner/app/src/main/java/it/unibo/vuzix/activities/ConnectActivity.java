@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.Button;
@@ -21,7 +22,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 
-public class ConnectActivity extends Activity { //implements AsyncRequest.AsyncRequestListener {
+public class ConnectActivity extends AppCompatActivity { //implements AsyncRequest.AsyncRequestListener {
 
     private Button confirmButton;
     private Button backButton;
