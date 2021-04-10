@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".OrderActivity">
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="Scan the bar code (ORDER+PLACEMENT)"
+        android:textSize="20dp"
+        android:focusable="false" />
+
+    <EditText
+        android:id="@+id/barcodePlacement"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:ems="10"
+        android:inputType="text"
+        android:text=""
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+        <requestFocus />
+    </EditText>
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="90dp"
+        android:gravity="center_horizontal"
+        android:text="Scan the code of placement" />
+
+    <EditText
+        android:id="@+id/barcodeOrder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="110dp"
+        android:ems="10"
+        android:inputType="text"
+        android:text=""
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+    </EditText>
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="160dp"
+        android:gravity="center_horizontal"
+        android:text="Scan the code of order"
+        android:focusable="false" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/ButtonHeight"
+        android:layout_below="@+id/textView"
+        android:layout_marginTop="200dp"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/confermOrderButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/custom_button"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:text="@string/ok"/>
+
+        <Button
+            android:id="@+id/backButtonOrder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/custom_button"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:text="@string/back"/>
+    </LinearLayout>
+
+
+
+
+</RelativeLayout>

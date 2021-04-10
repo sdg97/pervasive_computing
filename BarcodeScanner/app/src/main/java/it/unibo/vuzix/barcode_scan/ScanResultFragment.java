@@ -29,7 +29,7 @@
  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  **************************************************************************************/
-package com.vuzix.sample.barcode_scan;
+package it.unibo.vuzix.barcode_scan;
 
 import android.app.Fragment;
 import android.graphics.Bitmap;
@@ -38,8 +38,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import com.vuzix.sdk.barcode.ScanResult;
+
+import it.unibo.vuzix.activities.R;
 
 /**
  * A fragment to show the result of the barcode scan
@@ -73,7 +74,7 @@ public class ScanResultFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         ScanResultImageView bitmap = (ScanResultImageView)view.findViewById(R.id.bitmap);
-        TextView text = (TextView)view.findViewById(R.id.text);
+        //TextView text = (TextView)view.findViewById(R.id.text);
         TextView text2 = (TextView)view.findViewById(R.id.textView);
 
         // The arguments Bundle gives us the bitmap that was taken upon recognition of a barcode, and
@@ -83,7 +84,7 @@ public class ScanResultFragment extends Fragment {
             ScanResult scanResult = args.getParcelable(ARG_SCAN_RESULT);
             bitmap.setImageBitmap((Bitmap)args.getParcelable(ARG_BITMAP));
             bitmap.setLocation(scanResult.getLocation());
-            text.setText(scanResult.getText());
+            //text.setText(scanResult.getText());
             //text2.setText("Ciao Mare!");MUORE
         }
     }
