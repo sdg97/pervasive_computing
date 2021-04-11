@@ -1,7 +1,5 @@
 package it.unibo.vuzix.activities;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,24 +11,11 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 
 import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
 
 import it.unibo.vuzix.controller.Controller;
 import it.unibo.vuzix.utils.RaspberryAPI;
@@ -48,8 +33,8 @@ public class ConnectActivity extends AppCompatActivity {
 
         confirmButton = findViewById(R.id.button);
         confirmButton.setOnClickListener(v -> {
-            System.out.println("Confirm");
             Editable boxBarcode = editText.getText(); //1
+            System.out.println("Confirm to connect to box " + boxBarcode.toString());
             if(isValid(boxBarcode.toString())){
                 //localhost:5000/smartForklift/1/action/startUse
                 String url = RaspberryAPI.setStartUse(boxBarcode.toString());
@@ -98,8 +83,7 @@ public class ConnectActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {}
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
