@@ -16,7 +16,7 @@ public class RaspberryAPI {
         return BASE_URL + FORKLIFT;
     }
 
-    private static String setStartUse(String idRaspberry){
+    public static String setStartUse(String idRaspberry){
         return getBaseResourceURL() + idRaspberry + "/" +
                 ACTION +
                 STARTUSE;
