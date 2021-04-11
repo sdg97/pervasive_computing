@@ -27,7 +27,10 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 
 import it.unibo.vuzix.controller.Controller;
+import it.unibo.vuzix.model.Forklift;
 import it.unibo.vuzix.utils.RaspberryAPI;
+
+import static it.unibo.vuzix.activities.ConnectActivity.FORKLIFT_KEY;
 
 public class OrderActivity extends Activity implements View.OnClickListener {
     private Button confirmButton;
@@ -36,11 +39,15 @@ public class OrderActivity extends Activity implements View.OnClickListener {
     private EditText placementEditText;
     private int numOrder = 0;
     private static final int MAXORDER = 2; //TODO prendo da lunghezza lista di Forklift
+    private  Forklift forklift;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order);
+
+        Bundle bundle = getIntent().getExtras();
+        forklift = (Forklift) bundle.get(FORKLIFT_KEY);
 
         confirmButton = findViewById(R.id.confermOrderButton);
         confirmButton.setEnabled(false);
@@ -94,11 +101,9 @@ public class OrderActivity extends Activity implements View.OnClickListener {
             String orderCode = orderEditText.getText().toString(); //TODO String direttamente?
             String placementCode = placementEditText.getText().toString();
             System.out.println("Confirm to connect to box " + orderCode +
-                    " placement " + placementCode );
-
+                    " placement " + placementCode);
 
             JSONObject jsonObject = new JSONObject();
-
 
             if(isValid(orderCode) && isValid(placementCode)){
 
@@ -111,12 +116,14 @@ public class OrderActivity extends Activity implements View.OnClickListener {
 
                 final String mRequestBody = jsonObject.toString();
 
+                forklift.addElementMap(Integer.getInteger(placementCode), Integer.getInteger(orderCode));
+
                 //POST localhost:5000/smartForklift/raspberry/action/setPlacement
                 //body: {
                 //    "placement_id": 1,
                 //    "order_id": 447499
                 //}
-                String url = RaspberryAPI.setPlacement(orderCode); //TODO id raspberry prendo da forklift
+                String url = RaspberryAPI.setPlacement("" + this.forklift.getIdRaspberry());
                 JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                         Request.Method.POST,
                         url,
@@ -161,7 +168,7 @@ public class OrderActivity extends Activity implements View.OnClickListener {
             //todo partire chiamata di richiesta di connessione all'ordine
             //todo popup o testo di conferma poi cambio schermata
             numOrder++;
-            if (numOrder < MAXORDER){
+            if (numOrder < forklift.getPlacementNumber()){
                 AlertDialog.Builder ab = new AlertDialog.Builder(OrderActivity.this);
                 ab.setTitle("Would you add an other order?");
                 ab.setMessage("Would you add an other order?");

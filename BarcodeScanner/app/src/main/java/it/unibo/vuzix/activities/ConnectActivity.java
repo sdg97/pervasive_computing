@@ -18,10 +18,15 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import org.json.JSONObject;
 
 import it.unibo.vuzix.controller.Controller;
+import it.unibo.vuzix.model.Forklift;
 import it.unibo.vuzix.utils.RaspberryAPI;
 
 public class ConnectActivity extends AppCompatActivity {
 
+    private static final int ACTIVITY_CONNECT_CODE = 1;
+    public static final String FORKLIFT_KEY = "FORKLIFT";
+
+    private Forklift forklift;
     private Button confirmButton;
     private Button backButton;
     private EditText editText;
@@ -31,13 +36,19 @@ public class ConnectActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connect);
 
+        this.forklift = new Forklift();
+
         confirmButton = findViewById(R.id.button);
         confirmButton.setOnClickListener(v -> {
-            Editable boxBarcode = editText.getText(); //1
-            System.out.println("Confirm to connect to box " + boxBarcode.toString());
-            if(isValid(boxBarcode.toString())){
+            String boxBarcode = editText.getText().toString(); //1
+            System.out.println("Confirm to connect to box " + boxBarcode);
+
+            if(isValid(boxBarcode)){
+                this.forklift.setIdRaspberry(Integer.getInteger(boxBarcode));
+                this.forklift.setPlacementNumber(2);
+
                 //localhost:5000/smartForklift/1/action/startUse
-                String url = RaspberryAPI.setStartUse(boxBarcode.toString());
+                String url = RaspberryAPI.setStartUse(boxBarcode);
                 JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                         Request.Method.POST,
                         url,
@@ -47,7 +58,7 @@ public class ConnectActivity extends AppCompatActivity {
                             //todo
                             @Override
                             public void onResponse(JSONObject response) {
-
+                                System.out.println("Risposta " + response.toString());
                             }
                         },
                         new Response.ErrorListener() {
@@ -59,6 +70,11 @@ public class ConnectActivity extends AppCompatActivity {
                             }
                         });
                 Controller.getInstance(this).addToRequestQueue(jsonObjectRequest);
+
+                //shared forklift with OrderActivity
+                Intent intent = new Intent(this, OrderActivity.class);
+                intent.putExtra(FORKLIFT_KEY, forklift);
+                startActivityForResult(intent, ACTIVITY_CONNECT_CODE);
             } else {
                 Toast.makeText(ConnectActivity.this, "Get valid box code", Toast.LENGTH_SHORT).show();
             }
