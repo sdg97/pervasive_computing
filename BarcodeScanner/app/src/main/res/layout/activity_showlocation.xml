@@ -67,6 +67,18 @@
         </EditText>
 
         <Button
+            android:id="@+id/okButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:background="@drawable/custom_button"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:text="ok">
+        </Button>
+
+
+        <Button
             android:id="@+id/pickedButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -76,9 +88,6 @@
             android:focusableInTouchMode="true"
             android:text="Picked">
         </Button>
-
-
-
 
     </LinearLayout>
 
