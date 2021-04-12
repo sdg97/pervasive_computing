@@ -3,30 +3,28 @@ package it.unibo.vuzix.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class Forklift implements Parcelable {
 
+    public static final String FORKLIFT_KEY = "FORKLIFT";
+
     private int idRaspberry;
     private String jwt; //Lo vedo come id del magazziniere che si logga
-    private Map<Integer, Integer> placementOrderMap;
+    private Map<Integer, Integer> orderPlacementMap;
     private int placementNumber;
 
     public Forklift(){
-        placementOrderMap = new HashMap<>();
+        orderPlacementMap = new HashMap<>();
     }
 
     protected Forklift(Parcel in) {
         this.idRaspberry = in.readInt();
         this.jwt = in.readString();
-        this.placementOrderMap = new HashMap<>();
-        in.readMap(placementOrderMap, Integer.class.getClassLoader());
+        this.orderPlacementMap = new HashMap<>();
+        in.readMap(orderPlacementMap, Integer.class.getClassLoader());
     }
 
     public static final Creator<Forklift> CREATOR = new Creator<Forklift>() {
@@ -50,7 +48,7 @@ public class Forklift implements Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeInt(this.idRaspberry);
         parcel.writeString(this.jwt);
-        parcel.writeMap(this.placementOrderMap);
+        parcel.writeMap(this.orderPlacementMap);
     }
 
     /***
@@ -72,20 +70,20 @@ public class Forklift implements Parcelable {
         this.jwt = jwt;
     }
 
-    public Map<Integer, Integer> getPlacementOrderMap() {
-        return placementOrderMap;
+    public Map<Integer, Integer> getOrderPlacementMap() {
+        return orderPlacementMap;
     }
 
-    public void setPlacementOrderMap(Map<Integer, Integer> placementOrderMap) {
-        this.placementOrderMap = placementOrderMap;
+    public void setOrderPlacementMap(Map<Integer, Integer> orderPlacementMap) {
+        this.orderPlacementMap = orderPlacementMap;
     }
 
     public void addElementMap(Integer key, Integer value){
-        this.placementOrderMap.put(key, value);
+        this.orderPlacementMap.put(key, value);
     }
 
     public List<Integer> getAllOrders(){
-        return (List<Integer>) this.placementOrderMap.values();
+        return (List<Integer>) this.orderPlacementMap.values();
     }
 
     public int getPlacementNumber() {

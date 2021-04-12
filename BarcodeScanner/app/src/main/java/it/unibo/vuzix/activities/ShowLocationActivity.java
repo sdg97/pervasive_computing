@@ -1,24 +1,34 @@
 package it.unibo.vuzix.activities;
 
 import android.app.Activity;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
+import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
 
 import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 import it.unibo.vuzix.controller.Controller;
 import it.unibo.vuzix.model.Forklift;
 import it.unibo.vuzix.model.Order;
+import it.unibo.vuzix.model.Product;
 import it.unibo.vuzix.utils.OrderAPI;
 import it.unibo.vuzix.utils.RaspberryAPI;
 
+import static it.unibo.vuzix.model.Forklift.FORKLIFT_KEY;
 import static it.unibo.vuzix.services.OrderService.ORDER_KEY;
 
 public class ShowLocationActivity extends Activity implements View.OnClickListener {
@@ -46,6 +56,7 @@ public class ShowLocationActivity extends Activity implements View.OnClickListen
 
         Bundle bundle = getIntent().getExtras();
         order = (Order) bundle.get(ORDER_KEY);
+        forklift = (Forklift) bundle.get(FORKLIFT_KEY);
 
         this.locationElement = findViewById(R.id.textElemLocation);
         this.quantity = findViewById(R.id.quantity);
@@ -69,34 +80,96 @@ public class ShowLocationActivity extends Activity implements View.OnClickListen
         }
     }
 
-    private void checkOrderPicked(){
+    private void checkOrderPicked() {
+        int idOrder = order.getProducts().get(counter).getProductInfo().getIdOrder();
+        if(findProductOfOrder(idOrder, order.getProducts()).isEmpty()){
+            //Order picked
+            Integer placement = 0;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) { //TODO check possibili errori
+                placement = forklift.getOrderPlacementMap().getOrDefault(idOrder, 0);
+                if(placement == 0){
+                    Toast.makeText(ShowLocationActivity.this, "idOrder not found", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+            //localhost:5000/smartForklift/1/placements/1/orderDone
+            String url = RaspberryAPI.setOrderPicked(String.valueOf(forklift.getIdRaspberry()), String.valueOf(placement));
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                    Request.Method.POST,
+                    url,
+                    null,
+                    response -> { System.out.println(response); },
+                    error -> {
+                        //TODO ERROR
+                        Toast.makeText(ShowLocationActivity.this, "Error to set picked product", Toast.LENGTH_SHORT).show();
+                    });
+            Controller.getInstance(this).addToRequestQueue(jsonObjectRequest);
+        }
+    }
 
+    private List<Integer> findProductOfOrder(Integer orderId, List<Product> list){
+        final List<Integer> indexList = new ArrayList<>();
+        for (int i = counter; i < list.size(); i++) {
+            if (orderId.equals(list.get(i).getProductInfo().getIdOrder())) {
+                indexList.add(i);
+            }
+        }
+        return indexList;
     }
 
     private void setProductPicker(){
         order.getProducts().get(counter).getProductInfo().setPicked(true);
 
+        int idOrder = order.getProducts().get(counter).getProductInfo().getIdOrder();
+        Integer placement = 0;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) { //TODO check possibili errori
+            placement = forklift.getOrderPlacementMap().getOrDefault(idOrder, 0);
+            if(placement == 0){
+                Toast.makeText(ShowLocationActivity.this, "idOrder not found", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+
+        JSONObject jsonObject = new JSONObject();
+        //https://stackoverflow.com/questions/48424033/android-volley-post-request-with-json-object-in-body-and-getting-response-in-str/48424181
+        //CREATE JsonObject that represents the body request
+        try {
+            jsonObject.put("product_code", order.getProducts().get(counter).getId());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        final String mRequestBody = jsonObject.toString();
+
         //POST localhost:5000/smartForklift/1/placements/1/picked
-        String url = "";//RaspberryAPI.setOrderPicked();
+        String url = RaspberryAPI.setProductPicked(String.valueOf(forklift.getIdRaspberry()), String.valueOf(placement));
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.POST,
                 url,
                 null,
-                response -> {
-                    System.out.println(response);
-                    try {
-                        //System.out.println(response.getString("jwt"));
-                        forklift.setJwt(response.getString("jwt"));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-                },
+                response -> { /*RESPOND, ma non risponde*/},
                 error -> {
                     //TODO ERROR
-                    Toast.makeText(ShowLocationActivity.this, "Error to set picked product", Toast.LENGTH_SHORT).show();
-                });
+                    Toast.makeText(ShowLocationActivity.this, "Error to picked a Product", Toast.LENGTH_SHORT).show();
+                }) {
+                @Override
+                public String getBodyContentType() {
+                    return "application/json; charset=utf-8";
+                }
+
+                @Override
+                public byte[] getBody() {
+                    try {
+                        return mRequestBody == null ? null : mRequestBody.getBytes("utf-8");
+                    } catch (UnsupportedEncodingException uee) {
+                        VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", mRequestBody, "utf-8");
+                        return null;
+                    }
+                }
+                //TODO https://stackoverflow.com/questions/48424033/android-volley-post-request-with-json-object-in-body-and-getting-response-in-str/48424181
+            };
         Controller.getInstance(this).addToRequestQueue(jsonObjectRequest);
+
     }
 
     private void updateViewProduct(int index){

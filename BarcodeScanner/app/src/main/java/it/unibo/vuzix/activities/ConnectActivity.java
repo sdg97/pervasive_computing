@@ -23,9 +23,10 @@ import it.unibo.vuzix.model.Forklift;
 import it.unibo.vuzix.utils.OrderAPI;
 import it.unibo.vuzix.utils.RaspberryAPI;
 
+import static it.unibo.vuzix.model.Forklift.FORKLIFT_KEY;
+
 public class ConnectActivity extends AppCompatActivity {
 
-    public static final String FORKLIFT_KEY = "FORKLIFT";
     private static final int ACTIVITY_CONNECT_CODE = 1;
     private Forklift forklift;
     private Button confirmButton;

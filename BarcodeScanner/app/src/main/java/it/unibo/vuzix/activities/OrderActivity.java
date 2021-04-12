@@ -32,9 +32,10 @@ import it.unibo.vuzix.services.OrderService;
 import it.unibo.vuzix.utils.OrderAPI;
 import it.unibo.vuzix.utils.RaspberryAPI;
 
-import static it.unibo.vuzix.activities.ConnectActivity.FORKLIFT_KEY;
+import static it.unibo.vuzix.model.Forklift.FORKLIFT_KEY;
 
 public class OrderActivity extends Activity implements View.OnClickListener {
+    private static final int ACTIVITY_ORDER_CODE = 2;
     private Button confirmButton;
     private Button backButton;
     private EditText orderEditText;
@@ -49,6 +50,11 @@ public class OrderActivity extends Activity implements View.OnClickListener {
 
         Bundle bundle = getIntent().getExtras();
         forklift = (Forklift) bundle.get(FORKLIFT_KEY);
+
+        //shared forklift with OrderActivity
+        Intent intent = new Intent(this, OrderActivity.class);
+        intent.putExtra(FORKLIFT_KEY, forklift);
+        startActivityForResult(intent, ACTIVITY_ORDER_CODE);
 
         confirmButton = findViewById(R.id.confermOrderButton);
         confirmButton.setEnabled(false);
@@ -141,7 +147,7 @@ public class OrderActivity extends Activity implements View.OnClickListener {
                 e.printStackTrace();
             }
             final String mRequestBody = jsonObject.toString();
-            forklift.addElementMap(Integer.getInteger(placementCode), Integer.getInteger(orderCode));
+            forklift.addElementMap(Integer.getInteger(orderCode), Integer.getInteger(placementCode));
 
             //POST localhost:5000/smartForklift/IDRASPB/action/setPlacement
             //body: {

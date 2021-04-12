@@ -22,7 +22,7 @@ import it.unibo.vuzix.model.Order;
 import it.unibo.vuzix.model.Product;
 import it.unibo.vuzix.utils.OrderAPI;
 
-import static it.unibo.vuzix.activities.ConnectActivity.FORKLIFT_KEY;
+import static it.unibo.vuzix.model.Forklift.FORKLIFT_KEY;
 
 //https://developer.android.com/guide/components/services
 public class OrderService extends Service {
