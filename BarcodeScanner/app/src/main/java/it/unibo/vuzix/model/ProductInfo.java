@@ -26,7 +26,7 @@ public class ProductInfo implements Parcelable {
         }
     };
 
-    private ProductInfo(){
+    public ProductInfo(){
 
     }
 

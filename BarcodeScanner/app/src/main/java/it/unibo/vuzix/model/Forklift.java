@@ -84,6 +84,10 @@ public class Forklift implements Parcelable {
         this.placementOrderMap.put(key, value);
     }
 
+    public List<Integer> getAllOrders(){
+        return (List<Integer>) this.placementOrderMap.values();
+    }
+
     public int getPlacementNumber() {
         return placementNumber;
     }

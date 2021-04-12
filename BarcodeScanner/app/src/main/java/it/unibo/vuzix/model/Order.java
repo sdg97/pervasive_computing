@@ -12,8 +12,8 @@ public class Order  implements Parcelable {
 
     private List<Product> products; //TODO
 
-    private Order(){
-
+    public Order(){
+        products= new ArrayList<>();
     }
 
     protected Order(Parcel in) {
@@ -52,5 +52,13 @@ public class Order  implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeTypedList(this.products);
+    }
+
+    public List<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<Product> products) {
+        this.products = products;
     }
 }

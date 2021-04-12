@@ -28,6 +28,7 @@ import java.io.UnsupportedEncodingException;
 
 import it.unibo.vuzix.controller.Controller;
 import it.unibo.vuzix.model.Forklift;
+import it.unibo.vuzix.services.OrderService;
 import it.unibo.vuzix.utils.OrderAPI;
 import it.unibo.vuzix.utils.RaspberryAPI;
 
@@ -130,7 +131,7 @@ public class OrderActivity extends Activity implements View.OnClickListener {
         String placementCode = placementEditText.getText().toString();
         System.out.println("Confirm to connect to box " + orderCode + " placement " + placementCode);
         JSONObject jsonObject = new JSONObject();
-
+        //https://stackoverflow.com/questions/48424033/android-volley-post-request-with-json-object-in-body-and-getting-response-in-str/48424181
         if (isValid(orderCode) && isValid(placementCode)) {
             //CREATE JsonObject that represents the body request
             try {
@@ -203,6 +204,12 @@ public class OrderActivity extends Activity implements View.OnClickListener {
             }
         });
         ab.show();
+    }
+
+    private void startOrderService(){
+        Intent intent = new Intent(this, OrderService.class);
+        intent.putExtra(FORKLIFT_KEY, forklift);//TODO penso di poterlo fare
+        startService(intent);
     }
 
 }

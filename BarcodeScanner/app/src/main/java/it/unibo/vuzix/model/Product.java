@@ -18,7 +18,7 @@ public class Product implements Parcelable {
     private int id;
     private String codicesenza;
     private String warehousePlace;
-    private List<ProductInfo> listInfo; //TODO
+    private ProductInfo productInfo; //TODO
 
     public Product(){
 
@@ -28,21 +28,42 @@ public class Product implements Parcelable {
         this.codicesenza = in.readString();
         this.warehousePlace = in.readString();
         this.id = in.readInt();
-        this.listInfo = new ArrayList<>();
-        in.readList(listInfo, ProductInfo.class.getClassLoader());
+        /*this.productInfo = new ArrayList<>();
+        in.readList(productInfo, ProductInfo.class.getClassLoader());*/
+        this.productInfo = new ProductInfo();
     }
 
     //metodo che fa il parse di un JSONObject ; costruisce e restituisce il prodotto
     // in base al JSONObject passato in ingresso
     //TODO
-    public static Product from(JSONObject jsonObject){
-        Product product = new Product();
+    public static List<Product> from(JSONObject jsonObject){
+        List<Product> products = new ArrayList<>();
         try {
             //In base al Json restituito dalla chiamata
             //http://it2.life365.eu/api/order/idOrder?jwt=...
-            product.setId(jsonObject.getJSONObject("items").getInt("id"));
+
+            for (int i = 0; i < jsonObject.getJSONArray("items").length(); i++) {
+                Product product = new Product();
+                ProductInfo productInfo1 = new ProductInfo();
+                productInfo1.setIdOrder(jsonObject.getInt("id"));
+
+                product.setId(jsonObject.getJSONArray("items").getJSONObject(i).getInt("id"));
+                product.setWarehousePlace(jsonObject.getJSONArray("items").getJSONObject(i).getString("warehouse_place"));
+                product.setCodicesenza(jsonObject.getJSONArray("items").getJSONObject(i).getString("Codicesenza"));
+                productInfo1.setQuantity(jsonObject.getJSONArray("items").getJSONObject(i).getInt("qta"));
+                product.setProductInfo(productInfo1);
+
+                products.add(product);
+            }
+
+            /*
+            *  product.setId(jsonObject.getJSONObject("items").getInt("id"));
             product.setWarehousePlace(jsonObject.getJSONObject("items").getString("warehouse_place"));
             product.setCodicesenza(jsonObject.getJSONObject("items").getString("Codicesenza"));
+            productInfo1.setQuantity(jsonObject.getJSONObject("items").getInt("qta"));
+            productInfo1.setIdOrder(jsonObject.getInt("id"));
+            product.setProductInfo(productInfo1);
+            * */
 
             //product.setId(jsonObject.getInt("id"));
             //product.setCodicesenza(jsonObject.getString("Codicesenza"));
@@ -52,7 +73,7 @@ public class Product implements Parcelable {
             e.printStackTrace();
             return null;
         }
-        return product;
+        return products;
     }
 
     public static final Creator<Product> CREATOR = new Creator<Product>() {
@@ -77,7 +98,8 @@ public class Product implements Parcelable {
         parcel.writeInt(this.id);
         parcel.writeString(this.codicesenza);
         parcel.writeString(this.warehousePlace);
-        parcel.writeTypedList(this.listInfo);
+        //parcel.writeTypedList(this.productInfo);
+        //TODO ????? parcel.write
     }
 
     /***
@@ -95,8 +117,8 @@ public class Product implements Parcelable {
         this.warehousePlace = warehousePlace;
     }
 
-    public void setListInfo(List<ProductInfo> listInfo) {
-        this.listInfo = listInfo;
+    public void setProductInfo(ProductInfo productInfo) {
+        this.productInfo = productInfo;
     }
 
     public String getCodicesenza() {
@@ -111,8 +133,8 @@ public class Product implements Parcelable {
         return id;
     }
 
-    public List<ProductInfo> getListInfo() {
-        return listInfo;
+    public ProductInfo getProductInfo() {
+        return productInfo;
     }
 
     //TODO
@@ -139,11 +161,11 @@ public class Product implements Parcelable {
         return id == product.id &&
                 Objects.equals(codicesenza, product.codicesenza) &&
                 Objects.equals(warehousePlace, product.warehousePlace) &&
-                Objects.equals(listInfo, product.listInfo);
+                Objects.equals(productInfo, product.productInfo);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(codicesenza, warehousePlace, id, listInfo);
+        return Objects.hash(codicesenza, warehousePlace, id, productInfo);
     }
 }
