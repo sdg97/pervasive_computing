@@ -48,7 +48,7 @@ public class RaspberryAPI {
      * @param idPlacement
      * @return
      */
-    public static String getProductQuantity(String idRaspberry, String idPlacement){
+    public static String setPutHere(String idRaspberry, String idPlacement){
         return getBaseResourceURL() +
                 idRaspberry + "/" +
                 PLACEMENTS +

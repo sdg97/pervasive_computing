@@ -80,6 +80,62 @@ public class ShowLocationActivity extends Activity implements View.OnClickListen
         }
     }
 
+    private void putProductHere(){
+        JSONObject jsonObject = new JSONObject();
+        //https://stackoverflow.com/questions/48424033/android-volley-post-request-with-json-object-in-body-and-getting-response-in-str/48424181
+        //CREATE JsonObject that represents the body request
+        try {
+            jsonObject.put("product_code", order.getProducts().get(counter).getId());
+            jsonObject.put("qty", order.getProducts().get(counter).getProductInfo().getQuantity());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        final String mRequestBody = jsonObject.toString();
+
+        int idOrder = order.getProducts().get(counter).getProductInfo().getIdOrder();
+        Integer placement = 0;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) { //TODO check possibili errori
+            placement = forklift.getOrderPlacementMap().getOrDefault(idOrder, 0);
+            if(placement == 0){
+                Toast.makeText(ShowLocationActivity.this, "idOrder not found", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+        //POST localhost:5000/smartForklift/1/placements/1/putItHere
+        // body: {
+        //    "product_code": 2314332434,
+        //            "qty": 5
+        //}
+        String url = RaspberryAPI.setPutHere(String.valueOf(forklift.getIdRaspberry()), String.valueOf(placement));
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                Request.Method.POST,
+                url,
+                null,
+                response -> { /*RESPOND, ma non risponde*/},
+                error -> {
+                    //TODO ERROR
+                    Toast.makeText(ShowLocationActivity.this, "Error to picked a Product", Toast.LENGTH_SHORT).show();
+                }) {
+            @Override
+            public String getBodyContentType() {
+                return "application/json; charset=utf-8";
+            }
+
+            @Override
+            public byte[] getBody() {
+                try {
+                    return mRequestBody == null ? null : mRequestBody.getBytes("utf-8");
+                } catch (UnsupportedEncodingException uee) {
+                    VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", mRequestBody, "utf-8");
+                    return null;
+                }
+            }
+            //TODO https://stackoverflow.com/questions/48424033/android-volley-post-request-with-json-object-in-body-and-getting-response-in-str/48424181
+        };
+        Controller.getInstance(this).addToRequestQueue(jsonObjectRequest);
+    }
+
     private void checkOrderPicked() {
         int idOrder = order.getProducts().get(counter).getProductInfo().getIdOrder();
         if(findProductOfOrder(idOrder, order.getProducts()).isEmpty()){
