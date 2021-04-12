@@ -13,8 +13,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
+import com.android.volley.Response;
 import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
 
 import org.json.JSONException;
@@ -169,7 +172,20 @@ public class OrderActivity extends Activity implements View.OnClickListener {
                                 return null;
                             }
                         }
-                        //TODO https://stackoverflow.com/questions/48424033/android-volley-post-request-with-json-object-in-body-and-getting-response-in-str/48424181
+
+                        //TODO PROVA REMOVE?!?!
+                        @Override
+                        protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+                            JSONObject responseString = new JSONObject();
+                            if (response != null) {
+                                try {
+                                    responseString.put("statusCode", response.statusCode);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
+                        }
                     };
             Controller.getInstance(this).addToRequestQueue(jsonObjectRequest);
         } else {

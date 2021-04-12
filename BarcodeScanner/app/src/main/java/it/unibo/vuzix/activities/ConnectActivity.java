@@ -87,7 +87,8 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
             //shared forklift with OrderActivity
             Intent intent = new Intent(this, OrderActivity.class);
             intent.putExtra(FORKLIFT_KEY, forklift);
-            startActivityForResult(intent, ACTIVITY_CONNECT_CODE);
+            //startActivityForResult(intent, ACTIVITY_CONNECT_CODE);
+            startActivity(intent);
 
             launchActivity(OrderActivity.class);
         } else if (view.getId() == R.id.button4){
