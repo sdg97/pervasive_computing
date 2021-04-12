@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -25,8 +24,7 @@ import it.unibo.vuzix.controller.Controller;
 import it.unibo.vuzix.model.Forklift;
 import it.unibo.vuzix.model.Order;
 import it.unibo.vuzix.model.Product;
-import it.unibo.vuzix.utils.OrderAPI;
-import it.unibo.vuzix.utils.RaspberryAPI;
+import it.unibo.vuzix.api.RaspberryAPI;
 
 import static it.unibo.vuzix.model.Forklift.FORKLIFT_KEY;
 import static it.unibo.vuzix.services.OrderService.ORDER_KEY;

@@ -13,12 +13,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
 
 import org.json.JSONException;
@@ -29,8 +25,7 @@ import java.io.UnsupportedEncodingException;
 import it.unibo.vuzix.controller.Controller;
 import it.unibo.vuzix.model.Forklift;
 import it.unibo.vuzix.services.OrderService;
-import it.unibo.vuzix.utils.OrderAPI;
-import it.unibo.vuzix.utils.RaspberryAPI;
+import it.unibo.vuzix.api.RaspberryAPI;
 
 import static it.unibo.vuzix.model.Forklift.FORKLIFT_KEY;
 

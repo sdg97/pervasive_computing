@@ -1,4 +1,4 @@
-package it.unibo.vuzix.utils;
+package it.unibo.vuzix.api;
 
 public class OrderAPI {
     private static final String BASE_URL = "https://it2.life365.eu/";

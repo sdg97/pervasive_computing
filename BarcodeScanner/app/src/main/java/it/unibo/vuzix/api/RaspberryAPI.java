@@ -1,4 +1,4 @@
-package it.unibo.vuzix.utils;
+package it.unibo.vuzix.api;
 
 public class RaspberryAPI {
     private static final String BASE_URL = "localhost:5000/";

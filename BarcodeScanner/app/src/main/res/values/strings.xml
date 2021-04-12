@@ -1,10 +1,7 @@
 <resources>
     <string name="app_name">Vuzix Barcode</string>
-    <string name="main_activity_name">Barcode</string>
+    <string name="main_activity_name">Vuzix Forklift</string>
     <string name="grant_camera_permission">To use the barcode scanner, please grant camera permissions and try again.</string>
-    <string name="scanner_error_message">Unable to open scanner!</string>
-    <string name="scan_instructions">Place a barcode inside the viewfinder rectangle to scan it.</string>
-    <string name="only_on_m300">Barcode SDK only runs on Vuzix M300</string>
     <string name="connectButton">Connect to Box</string>
     <string name="continueButton">Continue</string>
     <string name="exitButton">Exit</string>
@@ -12,7 +9,6 @@
     <string name="MessageBtn1">Connect</string>
     <string name="MessageBtn2">Continue</string>
     <string name="MessageBtn3">Exit</string>
-    <string name="btnSendRequest">Ciao</string>
     <string name="ok">Confirm</string>
     <string name="back">Back</string>
     <!-- Strings used for fragments for navigation -->

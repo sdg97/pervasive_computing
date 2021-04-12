@@ -20,8 +20,8 @@ import org.json.JSONObject;
 
 import it.unibo.vuzix.controller.Controller;
 import it.unibo.vuzix.model.Forklift;
-import it.unibo.vuzix.utils.OrderAPI;
-import it.unibo.vuzix.utils.RaspberryAPI;
+import it.unibo.vuzix.api.OrderAPI;
+import it.unibo.vuzix.api.RaspberryAPI;
 
 import static it.unibo.vuzix.model.Forklift.FORKLIFT_KEY;
 
