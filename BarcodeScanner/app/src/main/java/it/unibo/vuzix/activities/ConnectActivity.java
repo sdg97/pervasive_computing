@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -25,13 +26,14 @@ import it.unibo.vuzix.api.RaspberryAPI;
 
 import static it.unibo.vuzix.model.Forklift.FORKLIFT_KEY;
 
-public class ConnectActivity extends AppCompatActivity {
+public class ConnectActivity extends AppCompatActivity implements View.OnClickListener{
 
     private static final int ACTIVITY_CONNECT_CODE = 1;
     private Forklift forklift;
+
     private Button confirmButton;
     private Button backButton;
-    private EditText editText;
+    private EditText boxCode;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -41,37 +43,19 @@ public class ConnectActivity extends AppCompatActivity {
         this.forklift = new Forklift();
 
         confirmButton = findViewById(R.id.button);
-        confirmButton.setOnClickListener(v -> {
-            startUse();
-            setJwtForklift();
-
-            //shared forklift with OrderActivity
-            Intent intent = new Intent(this, OrderActivity.class);
-            intent.putExtra(FORKLIFT_KEY, forklift);
-            startActivityForResult(intent, ACTIVITY_CONNECT_CODE);
-
-            launchActivity(OrderActivity.class);
-        });
+        confirmButton.setOnClickListener(this);
         confirmButton.setEnabled(false);
 
         backButton = findViewById(R.id.button4);
-        backButton.setOnClickListener(v -> {
-            System.out.println("back");
-            //TODO It's right?!?!?
-            ConnectActivity.this.finish();
-            setContentView(R.layout.activity_main);
-        });
+        backButton.setOnClickListener(this);
 
-        editText = findViewById(R.id.barcodetext);
-        editText.addTextChangedListener(new TextWatcher() {
+        boxCode = findViewById(R.id.barcodetext);
+        boxCode.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {}
 
             @Override
-            public void afterTextChanged(Editable s) {
-            }
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -83,6 +67,38 @@ public class ConnectActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (view.getId() == R.id.button) {
+            startUse(boxCode.getText().toString()); //I want to start to use the barcode scanned
+            setJwtForklift();
+
+            //TODO
+            //shared forklift with OrderActivity
+            Intent intent = new Intent(this, OrderActivity.class);
+            intent.putExtra(FORKLIFT_KEY, forklift);
+            startActivityForResult(intent, ACTIVITY_CONNECT_CODE);
+
+            launchActivity(OrderActivity.class);
+        } else if (view.getId() == R.id.button4){
+            System.out.println("back");
+            //TODO It's right?!?!?
+            ConnectActivity.this.finish();
+            setContentView(R.layout.activity_main);
+        }
+    }
+
+    //TODO min lenght...
     private boolean isValid(String boxBarcode) {
         return !boxBarcode.isEmpty();
     }
@@ -101,53 +117,40 @@ public class ConnectActivity extends AppCompatActivity {
                 response -> {
                     System.out.println(response);
                     try {
-                        //System.out.println(response.getString("jwt"));
                         forklift.setJwt(response.getString("jwt"));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
                 },
                 error -> {
-                    //TODO ERROR
                     Toast.makeText(ConnectActivity.this, "Can't reach jwt", Toast.LENGTH_SHORT).show();
                 });
         Controller.getInstance(this).addToRequestQueue(jsonObjectRequest);
     }
 
-    private void startUse() {
-
-        String boxBarcode = editText.getText().toString(); //1
-        System.out.println("Confirm to connect to box " + boxBarcode);
+    private void startUse(String boxBarcode) {
+        System.out.println("I want to connect to raspberry " + boxBarcode);
 
         if (isValid(boxBarcode)) {
+            //set the id of Raspberry = box
             this.forklift.setIdRaspberry(Integer.getInteger(boxBarcode));
+
             //localhost:5000/smartForklift/1/action/startUse
             String url = RaspberryAPI.setStartUse(boxBarcode);
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                     Request.Method.POST,
                     url,
                     null,
-                    new Response.Listener<JSONObject>() {
-                        //{placements: [0, 1]}
-                        //todo
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            System.out.println("Risposta " + response.toString());
-                            try {
-                                //placements dovrebbe essere un array di Int
-                                forklift.setPlacementNumber(response.getJSONArray("placements").length());
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
+                    response -> {
+                        //System.out.println("Risposta " + response.toString()); //{placements: [1,2]}
+                        try {
+                            forklift.setPlacementNumber(response.getJSONArray("placements").length());
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
                     },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            //TODO ERROR
-                            Toast.makeText(ConnectActivity.this, "Connection error to the box", Toast.LENGTH_SHORT).show();
-                        }
+                    error -> {
+                        Toast.makeText(ConnectActivity.this, "Connection error to the box", Toast.LENGTH_SHORT).show();
                     });
             Controller.getInstance(this).addToRequestQueue(jsonObjectRequest);
         } else {

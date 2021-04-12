@@ -43,9 +43,11 @@ public class OrderActivity extends Activity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order);
 
+        //TODO
         Bundle bundle = getIntent().getExtras();
         forklift = (Forklift) bundle.get(FORKLIFT_KEY);
 
+        //TODO
         //shared forklift with OrderActivity
         Intent intent = new Intent(this, OrderActivity.class);
         intent.putExtra(FORKLIFT_KEY, forklift);
@@ -61,12 +63,10 @@ public class OrderActivity extends Activity implements View.OnClickListener {
         orderEditText = findViewById(R.id.barcodeOrder);
         orderEditText.addTextChangedListener(new TextWatcher() {
             @Override
-            public void afterTextChanged(Editable s) {
-            }
+            public void afterTextChanged(Editable s) { }
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {   }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -80,12 +80,10 @@ public class OrderActivity extends Activity implements View.OnClickListener {
         placementEditText = findViewById(R.id.barcodePlacement);
         placementEditText.addTextChangedListener(new TextWatcher() {
             @Override
-            public void afterTextChanged(Editable s) {
-            }
+            public void afterTextChanged(Editable s) { }
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -104,16 +102,15 @@ public class OrderActivity extends Activity implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.confermOrderButton) { //CONFERM
+            if(setPlacementOrder());
+                numOrder++;
 
-            setPlacementOrder();
-
-            numOrder++;
             if (numOrder < forklift.getPlacementNumber()) {
                 addNewOrderDialog();
             } else {
+                startOrderService();
                 Toast.makeText(OrderActivity.this, "You have reached the maximum number of orders that can be managed", Toast.LENGTH_SHORT).show();
                 launchActivity(ShowLocationActivity.class);
-                //OrderActivity.this.finish(); TODO
             }
         } else if (view.getId() == R.id.backButtonOrder) { //BACK
             System.out.println("back");
@@ -127,7 +124,7 @@ public class OrderActivity extends Activity implements View.OnClickListener {
         return !toString.isEmpty();
     }
 
-    private void setPlacementOrder() {
+    private boolean setPlacementOrder() {
         String orderCode = orderEditText.getText().toString(); //TODO String direttamente?
         String placementCode = placementEditText.getText().toString();
         System.out.println("Confirm to connect to box " + orderCode + " placement " + placementCode);
@@ -144,21 +141,19 @@ public class OrderActivity extends Activity implements View.OnClickListener {
             final String mRequestBody = jsonObject.toString();
             forklift.addElementMap(Integer.getInteger(orderCode), Integer.getInteger(placementCode));
 
-            //POST localhost:5000/smartForklift/IDRASPB/action/setPlacement
+            //POST localhost:5000/smartForklift/idRASPBERRRY/action/setPlacement
             //body: {
             //    "placement_id": 1,
             //    "order_id": 447499
             //}
             String url = RaspberryAPI.setPlacement("" + this.forklift.getIdRaspberry());
-
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                     Request.Method.POST,
                     url,
                     null,
                     response -> { /*RESPOND, ma non risponde*/},
                     error -> {
-                        //TODO ERROR
-                        Toast.makeText(OrderActivity.this, "Connection error to the box", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(OrderActivity.this, "Error to set placement-order", Toast.LENGTH_SHORT).show();
                     }) {
                         @Override
                         public String getBodyContentType() {
@@ -179,8 +174,9 @@ public class OrderActivity extends Activity implements View.OnClickListener {
             Controller.getInstance(this).addToRequestQueue(jsonObjectRequest);
         } else {
             Toast.makeText(OrderActivity.this, "Get valid box/order code", Toast.LENGTH_SHORT).show();
+            return false;
         }
-
+        return true;
     }
 
     private void addNewOrderDialog(){
@@ -194,11 +190,14 @@ public class OrderActivity extends Activity implements View.OnClickListener {
                 //todo reload the same activity
                 orderEditText.setText("");
                 placementEditText.setText("");
+                confirmButton.setEnabled(false);
             }
         });
         ab.setNegativeButton("no", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                startOrderService();
+
                 dialog.dismiss();
                 OrderActivity.this.finish();
                 launchActivity(ShowLocationActivity.class);

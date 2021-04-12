@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,6 +37,7 @@ public class ShowLocationActivity extends Activity implements View.OnClickListen
     private TextView locationElement;
     private TextView quantity;
     private TextView idProduct;
+    private EditText productCodeScanned;
 
     private Order order;
     private int counter = 0;
@@ -52,6 +54,7 @@ public class ShowLocationActivity extends Activity implements View.OnClickListen
         this.okButton = findViewById(R.id.okButton);
         this.okButton.setOnClickListener(this);
 
+        //TODO riguardare
         Bundle bundle = getIntent().getExtras();
         order = (Order) bundle.get(ORDER_KEY);
         forklift = (Forklift) bundle.get(FORKLIFT_KEY);
@@ -60,16 +63,18 @@ public class ShowLocationActivity extends Activity implements View.OnClickListen
         this.quantity = findViewById(R.id.quantity);
         this.idProduct = findViewById(R.id.productCode);
 
-        updateViewProduct(0);
+        this.productCodeScanned = findViewById(R.id.barcodeProduct);
 
+        updateViewProduct(0);
     }
 
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.okButton){
-
-
-
+            if (!productCodeScanned.getText().toString().isEmpty())
+                putProductHere();
+            else
+                Toast.makeText(ShowLocationActivity.this, "scan the product code", Toast.LENGTH_SHORT).show();
         } else if(view.getId() == R.id.pickedButton){
             setProductPicker();
             checkOrderPicked();
@@ -79,17 +84,7 @@ public class ShowLocationActivity extends Activity implements View.OnClickListen
     }
 
     private void putProductHere(){
-        JSONObject jsonObject = new JSONObject();
         //https://stackoverflow.com/questions/48424033/android-volley-post-request-with-json-object-in-body-and-getting-response-in-str/48424181
-        //CREATE JsonObject that represents the body request
-        try {
-            jsonObject.put("product_code", order.getProducts().get(counter).getId());
-            jsonObject.put("qty", order.getProducts().get(counter).getProductInfo().getQuantity());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        final String mRequestBody = jsonObject.toString();
 
         int idOrder = order.getProducts().get(counter).getProductInfo().getIdOrder();
         Integer placement = 0;
@@ -100,6 +95,18 @@ public class ShowLocationActivity extends Activity implements View.OnClickListen
                 return;
             }
         }
+
+        JSONObject jsonObject = new JSONObject();
+        //CREATE JsonObject that represents the body request
+        try {
+            jsonObject.put("product_code", productCodeScanned.getText().toString());//order.getProducts().get(counter).getId());
+            jsonObject.put("qty", order.getProducts().get(counter).getProductInfo().getQuantity());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        final String mRequestBody = jsonObject.toString();
+
         //POST localhost:5000/smartForklift/1/placements/1/putItHere
         // body: {
         //    "product_code": 2314332434,
@@ -112,8 +119,7 @@ public class ShowLocationActivity extends Activity implements View.OnClickListen
                 null,
                 response -> { /*RESPOND, ma non risponde*/},
                 error -> {
-                    //TODO ERROR
-                    Toast.makeText(ShowLocationActivity.this, "Error to picked a Product", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ShowLocationActivity.this, "Error to put a Product", Toast.LENGTH_SHORT).show();
                 }) {
             @Override
             public String getBodyContentType() {

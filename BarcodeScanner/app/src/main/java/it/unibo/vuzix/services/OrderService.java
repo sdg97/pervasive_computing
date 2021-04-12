@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import it.unibo.vuzix.activities.OrderActivity;
 import it.unibo.vuzix.activities.ShowLocationActivity;
 import it.unibo.vuzix.controller.Controller;
 import it.unibo.vuzix.model.Forklift;
@@ -62,6 +63,7 @@ public class OrderService extends Service {
         Order order = new Order();
         order.setProducts(productList);
 
+        //TODO Check
         Intent intentLocation = new Intent(this, ShowLocationActivity.class);
         Bundle b = new Bundle();
         b.putParcelable(ORDER_KEY, order);
@@ -84,7 +86,6 @@ public class OrderService extends Service {
         //https://stackoverflow.com/questions/48424033/android-volley-post-request-with-json-object-in-body-and-getting-response-in-str/48424181
 
         //http://it2.life365.eu/api/order/447499?jwt=...
-        String url;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) { //TODO possibili errori
             orderList.forEach(i -> {
                 String urls = OrderAPI.getOrderURL(i.toString(), forklift.getJwt());
@@ -95,6 +96,8 @@ public class OrderService extends Service {
                         response -> { productList.addAll(Product.from(response));},
                         error -> {
                             //TODO ERROR
+                            System.out.println("Not able to reach product list for order" + i.toString());
+
                         });
                 Controller.getInstance(this).addToRequestQueue(jsonObjectRequest);
             });
@@ -130,18 +133,4 @@ public class OrderService extends Service {
         this.userRequestQueue.add(request);
         executeRequest(getNextRequest());
     }*/
-
-    /**
-     * Method that implements thread waiting.
-     *
-     * @param second, second to waiting
-     */
-    private static void waitSecond(int second){
-        try{
-            Thread.sleep(second*1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
 }
