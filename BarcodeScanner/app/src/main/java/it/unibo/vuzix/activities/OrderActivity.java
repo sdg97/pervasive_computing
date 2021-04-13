@@ -19,6 +19,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -133,30 +134,31 @@ public class OrderActivity extends Activity implements View.OnClickListener {
     private boolean setPlacementOrder() {
         String orderCode = orderEditText.getText().toString(); //TODO String direttamente?
         String placementCode = placementEditText.getText().toString();
-        System.out.println("Confirm to connect to box " + orderCode + " placement " + placementCode);
+        System.out.println("Confirm to connect order " + orderCode + " to placement " + placementCode);
         JSONObject jsonObject = new JSONObject();
         //https://stackoverflow.com/questions/48424033/android-volley-post-request-with-json-object-in-body-and-getting-response-in-str/48424181
         if (isValid(orderCode) && isValid(placementCode)) {
+            forklift.addElementMap(Integer.parseInt(orderCode), Integer.parseInt(placementCode));
+
             //CREATE JsonObject that represents the body request
             try {
-                jsonObject.put("placement_id", placementCode); //TODO string o int??
+                jsonObject.put("placement_id", placementCode);
                 jsonObject.put("order_id", orderCode);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
             final String mRequestBody = jsonObject.toString();
-            forklift.addElementMap(Integer.parseInt(orderCode), Integer.parseInt(placementCode));
 
             //POST localhost:5000/smartForklift/idRASPBERRRY/action/setPlacement
             //body: {
             //    "placement_id": 1,
             //    "order_id": 447499
             //}
-            String url = RaspberryAPI.setPlacement("" + this.forklift.getIdRaspberry());
-            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+            String url = RaspberryAPI.setPlacement(String.valueOf(this.forklift.getIdRaspberry()));
+            System.out.println("ORDER ACTIVITI " + url);
+            StringRequest jsonObjectRequest = new StringRequest(
                     Request.Method.POST,
                     url,
-                    null,
                     response -> { /*RESPOND, ma non risponde*/},
                     error -> {
                         Toast.makeText(OrderActivity.this, "Error to set placement-order", Toast.LENGTH_SHORT).show();
@@ -176,19 +178,6 @@ public class OrderActivity extends Activity implements View.OnClickListener {
                             }
                         }
 
-                        //TODO PROVA REMOVE?!?!
-                        @Override
-                        protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
-                            JSONObject responseString = new JSONObject();
-                            if (response != null) {
-                                try {
-                                    responseString.put("statusCode", response.statusCode);
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                            return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
-                        }
                     };
             Controller.getInstance(this).addToRequestQueue(jsonObjectRequest);
         } else {

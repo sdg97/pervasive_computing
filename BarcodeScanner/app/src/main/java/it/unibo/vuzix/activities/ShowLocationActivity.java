@@ -152,43 +152,46 @@ public class ShowLocationActivity extends Activity implements View.OnClickListen
     private void checkOrderPicked() {
         int idOrder = order.getProducts().get(counter).getProductInfo().getIdOrder();
         System.out.println("CHECK ORDER PICKED " + counter + "  su  " + order.getProducts().size());
-        if((order.getProducts().size()-1) == counter || findProductOfOrder(idOrder, order.getProducts()).isEmpty()){
-            System.out.println("CHECK ORDER PICKED");
+        System.out.println("FOUND " + findProductOfOrder(idOrder, order.getProducts()).toString());
+
+        if(/*(order.getProducts().size()-1) == counter ||*/ findProductOfOrder(idOrder, order.getProducts()).isEmpty()){
+
             Integer placement = forklift.getOrderPlacementMap().get(idOrder);
+            System.out.println("CHECK ORDER PICKED" + placement);
             if(placement == 0){
                 Toast.makeText(ShowLocationActivity.this, "idOrder not found", Toast.LENGTH_SHORT).show();
                 return;
             }
             //localhost:5000/smartForklift/1/placements/1/orderDone
             String url = RaspberryAPI.setOrderPicked(String.valueOf(forklift.getIdRaspberry()), String.valueOf(placement));
+            System.out.println(url);
             StringRequest jsonObjectRequest = new StringRequest(
                     Request.Method.POST,
                     url,
-                    response -> { System.out.println("PICKED!!!!!!!" + response);
-                    if((order.getProducts().size()-1) >= counter){
-                        Toast.makeText(ShowLocationActivity.this, "Orders COMPLETED!!", Toast.LENGTH_SHORT).show();
-                        this.finish();
-                        //   startActivity(new Intent(this, MainActivity.class));
-                    }},
+                    response -> { System.out.println("ORDER DONE!!!!!!!" + response);
+                        if ((order.getProducts().size()) == counter){
+                            Toast.makeText(ShowLocationActivity.this, "Orders COMPLETED!!", Toast.LENGTH_SHORT).show();
+                            this.finish();
+                            startActivity(new Intent(this, MainActivity.class));
+                        }},
                     error -> {
                         Toast.makeText(ShowLocationActivity.this, "Error to set picked product", Toast.LENGTH_SHORT).show();
                     });
             Controller.getInstance(this).addToRequestQueue(jsonObjectRequest);
         }
-        if ((order.getProducts().size()-1) >= counter ){
-            Toast.makeText(ShowLocationActivity.this, "Orders COMPLETED!!", Toast.LENGTH_SHORT).show();
-            this.finish();
-            startActivity(new Intent(this, MainActivity.class));
-        }
     }
 
-    private List<Integer> findProductOfOrder(Integer orderId, List<Product> list){
+    private List<Integer> findProductOfOrder(int orderId, List<Product> list){
         final List<Integer> indexList = new ArrayList<>();
-        for (int i = counter; i < list.size(); i++) {
-            if (orderId.equals(list.get(i).getProductInfo().getIdOrder())) {
-                indexList.add(i);
+        if(counter+1 < list.size())
+        for (int i = counter+1; i < list.size(); i++) {
+            System.out.println("FIND " + orderId + "equals " + list.get(i).getProductInfo().getIdOrder());
+            if (orderId == (list.get(i).getProductInfo().getIdOrder())) {
+                System.out.println("EEQUALSSSSS");
+                indexList.add(orderId);
             }
         }
+        System.out.println(indexList);
         return indexList;
     }
 

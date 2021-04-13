@@ -87,7 +87,6 @@ public class ConnectActivity extends Activity implements View.OnClickListener{
             System.out.println("aftrer start");
         } else if (view.getId() == R.id.button4){
             System.out.println("back");
-            //TODO It's right?!?!?
             this.finish();
             setContentView(R.layout.activity_main);
         }
