@@ -1,7 +1,7 @@
 package it.unibo.vuzix.api;
 
 public class RaspberryAPI {
-    private static final String BASE_URL = "localhost:5000/";
+    private static final String BASE_URL = "http://52.19.198.62/";
     private static final String FORKLIFT = "smartForklift/";
     private static final String ACTION = "action/";
     private static final String STARTUSE = "startUse";
@@ -39,7 +39,7 @@ public class RaspberryAPI {
 
     /**
      * Per dire "Raspberry fai vedere dove il magazziniere deve mettere il prodotto'
-     * POST localhost:5000/smartForklift/1/placements/1/putItHere
+     * POST http://52.19.198.62/smartForklift/1/placements/1/action/putItHere
      * body: {
      *     "product_code": 2314332434,
      *     "qty": 5
@@ -51,7 +51,7 @@ public class RaspberryAPI {
     public static String setPutHere(String idRaspberry, String idPlacement){
         return getBaseResourceURL() +
                 idRaspberry + "/" +
-                PLACEMENTS +
+                PLACEMENTS + "/" +
                 idPlacement + "/" +
                 PUTITHERE;
     }
@@ -59,7 +59,7 @@ public class RaspberryAPI {
     public static String setProductPicked(String idRaspberry, String idPlacement){
         return getBaseResourceURL() +
                 idRaspberry + "/" +
-                PLACEMENTS +
+                PLACEMENTS + "/" +
                 idPlacement + "/" +
                 PICKED;
     }
@@ -67,7 +67,7 @@ public class RaspberryAPI {
     public static String setOrderPicked(String idRaspberry, String idPlacement){
         return getBaseResourceURL() +
                 idRaspberry + "/" +
-                PLACEMENTS +
+                PLACEMENTS + "/" +
                 idPlacement + "/" +
                 ORDERDONE;
     }

@@ -38,7 +38,7 @@ public class OrderService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        forklift = new Forklift();
+        //forklift = new Forklift();
         orderList = new ArrayList<>();
         productList = new ArrayList<>();
     }
@@ -53,55 +53,66 @@ public class OrderService extends Service {
 
         Bundle bundle = intent.getExtras();
         forklift = (Forklift) bundle.get(FORKLIFT_KEY);
+        System.out.println("ORDER SRVICE Forklift " + forklift);
         orderList = forklift.getAllOrders();
+        System.out.println("Order " + orderList);
 
         //per ogni ordine invio la richiesta, quando arriva la risposta mantengo tutto nella lista dei prodotti
         populateProductList();
-        Comparator<Product> comparebyWerehouseplace = (Product p1, Product p2) -> p1.getWarehousePlace().compareTo(p2.getWarehousePlace());
-        Collections.sort(productList, comparebyWerehouseplace); //TODO check ordinato
-
-        Order order = new Order();
-        order.setProducts(productList);
-
-        //TODO Check
-        Intent intentLocation = new Intent(this, ShowLocationActivity.class);
-        Bundle b = new Bundle();
-        b.putParcelable(ORDER_KEY, order);
-        intentLocation.putExtras(b);
-        //intentLocation.putExtra(PRODUCTS_KEY, order);
 
 
-        //startActivityForResult(intentLocation, ACTIVITY_SHOWLOCATION_CODE);
-        /*
-         * Return value of the "onStartCommand" method.
-         * The most used constants in this context are:
-         * - START_STICKY: The service is restarted if it is terminated. The intent passed to the "onStartCommand" method is null.
-         * - START_NOT_STICKY: The service is not restarted. Used for services that are periodically started in each case.
-         * - START_REDELIVER_INTENT: similar to START_STICKY but the original intent is "re-delivered" to the "onStartCommand" method.
-         */
-        return START_REDELIVER_INTENT;
+        return START_STICKY;
     }
 
     private void populateProductList(){
         //https://stackoverflow.com/questions/48424033/android-volley-post-request-with-json-object-in-body-and-getting-response-in-str/48424181
 
         //http://it2.life365.eu/api/order/447499?jwt=...
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) { //TODO possibili errori
-            orderList.forEach(i -> {
-                String urls = OrderAPI.getOrderURL(i.toString(), forklift.getJwt());
-                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
-                        Request.Method.POST,
-                        urls,
-                       null,
-                        response -> { productList.addAll(Product.from(response));},
-                        error -> {
-                            //TODO ERROR
-                            System.out.println("Not able to reach product list for order" + i.toString());
+       // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) { //TODO possibili errori
+            System.out.println("ORder list "+ orderList);
+            int counter = 0;
+            List<Integer> list = new ArrayList<>();
 
+            for(int i = 0; i<orderList.size(); i++){
+
+                String urls = OrderAPI.getOrderURL(orderList.get(i).toString(), forklift.getJwt());
+                System.out.println(urls);
+                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                        Request.Method.GET,
+                        urls,
+                        null,
+                        response -> { productList.addAll(Product.from(response));
+                            System.out.println("ORDER SERVICE product list " + productList);
+                            list.add(0);
+
+                            if(list.size() == orderList.size())     {
+                                Comparator<Product> comparebyWerehouseplace = (Product p1, Product p2) -> p1.getWarehousePlace().compareTo(p2.getWarehousePlace());
+                                Collections.sort(productList, comparebyWerehouseplace); //TODO check ordinato
+
+                                Order order = new Order();
+                                order.setProducts(productList);
+                                System.out.println("ORDER SERVICE Order " + order);
+
+                                //ArrayList<Product> orders = new ArrayList<>();
+                                //orders.addAll(productList);
+                                //TODO Check
+                                Intent intent = new Intent(this, ShowLocationActivity.class);
+                                System.out.println("*************************" + this);
+                                Bundle b = new Bundle();
+                                b.putParcelable(FORKLIFT_KEY, this.forklift);
+                                b.putParcelable(ORDER_KEY, order);
+                                intent.putExtras(b);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(intent);
+                            }
+                        },
+                        error -> {
+                            System.out.println("Not able to reach product list for order");
                         });
                 Controller.getInstance(this).addToRequestQueue(jsonObjectRequest);
-            });
-        }
+            }
+
+        System.out.println("FINE*******************");
     }
 
     /**

@@ -1,10 +1,11 @@
 package it.unibo.vuzix.api;
 
 public class OrderAPI {
-    private static final String BASE_URL = "https://it2.life365.eu/";
+    //http://it2.life365.eu/api/auth/warehouse?login=wh&password=wh365
+    private static final String BASE_URL = "http://it2.life365.eu/";
     private static final String API = "api/";
     private static final String AUTH = "auth/";
-    private static final String LOGIN = "admin?login=wh&password=wh365/";
+    private static final String LOGIN = "warehouse?login=wh&password=wh365";
     private static final String ORDER = "order/";
 
 
@@ -20,7 +21,7 @@ public class OrderAPI {
 
     public static String getOrderURL(String idOrder, String jwt){
         return getBaseResourceURL() +
-                ORDER + "/" + idOrder + "?jwt=" + jwt;
+                ORDER + idOrder + "?jwt=" + jwt;
     }
 
 }

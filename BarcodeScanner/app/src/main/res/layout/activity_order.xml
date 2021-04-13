@@ -22,7 +22,7 @@
         android:layout_marginTop="40dp"
         android:ems="10"
         android:inputType="text"
-        android:text=""
+        android:text="1"
         android:focusable="true"
         android:focusableInTouchMode="true">
         <requestFocus />
@@ -43,7 +43,7 @@
         android:layout_marginTop="110dp"
         android:ems="10"
         android:inputType="text"
-        android:text=""
+        android:text="447499"
         android:focusable="true"
         android:focusableInTouchMode="true">
     </EditText>

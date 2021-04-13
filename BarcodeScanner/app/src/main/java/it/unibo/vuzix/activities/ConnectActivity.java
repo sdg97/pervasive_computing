@@ -1,5 +1,6 @@
 package it.unibo.vuzix.activities;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -15,6 +16,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,7 +28,7 @@ import it.unibo.vuzix.api.RaspberryAPI;
 
 import static it.unibo.vuzix.model.Forklift.FORKLIFT_KEY;
 
-public class ConnectActivity extends AppCompatActivity implements View.OnClickListener{
+public class ConnectActivity extends Activity implements View.OnClickListener{
 
     private static final int ACTIVITY_CONNECT_CODE = 1;
     private Forklift forklift;
@@ -82,19 +84,11 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
         if (view.getId() == R.id.button) {
             startUse(boxCode.getText().toString()); //I want to start to use the barcode scanned
             setJwtForklift();
-
-            //TODO
-            //shared forklift with OrderActivity
-            Intent intent = new Intent(this, OrderActivity.class);
-            intent.putExtra(FORKLIFT_KEY, forklift);
-            //startActivityForResult(intent, ACTIVITY_CONNECT_CODE);
-            startActivity(intent);
-
-            launchActivity(OrderActivity.class);
+            System.out.println("aftrer start");
         } else if (view.getId() == R.id.button4){
             System.out.println("back");
             //TODO It's right?!?!?
-            ConnectActivity.this.finish();
+            this.finish();
             setContentView(R.layout.activity_main);
         }
     }
@@ -105,20 +99,25 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private <T> void launchActivity(Class<T> clazz) {
-        startActivity(new Intent(this, clazz));
+        Intent intent = new Intent(this, OrderActivity.class);
+        intent.putExtra(FORKLIFT_KEY, forklift);
+        startActivity(intent);
     }
 
     private void setJwtForklift() {
         //http://it2.life365.eu/api/auth/admin?login=wh&password=wh365
         String url = OrderAPI.getLoginURL();
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
-                Request.Method.POST,
+                Request.Method.GET,
                 url,
                 null,
                 response -> {
                     System.out.println(response);
                     try {
                         forklift.setJwt(response.getString("jwt"));
+                        System.out.println(forklift.getJwt());
+                        launchActivity(OrderActivity.class);
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -134,23 +133,20 @@ public class ConnectActivity extends AppCompatActivity implements View.OnClickLi
 
         if (isValid(boxBarcode)) {
             //set the id of Raspberry = box
-            this.forklift.setIdRaspberry(Integer.getInteger(boxBarcode));
-
+            this.forklift.setIdRaspberry(Integer.parseInt(boxBarcode));
+            this.forklift.setPlacementNumber(2);
             //localhost:5000/smartForklift/1/action/startUse
             String url = RaspberryAPI.setStartUse(boxBarcode);
-            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+            StringRequest jsonObjectRequest = new StringRequest(
                     Request.Method.POST,
                     url,
-                    null,
                     response -> {
-                        //System.out.println("Risposta " + response.toString()); //{placements: [1,2]}
-                        try {
-                            forklift.setPlacementNumber(response.getJSONArray("placements").length());
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                        System.out.println("Risposta " + response.toString()); //niente
+                        //forklift.setPlacementNumber(response.getJSONArray("placements").length());
+
                     },
                     error -> {
+                        System.out.println(error);
                         Toast.makeText(ConnectActivity.this, "Connection error to the box", Toast.LENGTH_SHORT).show();
                     });
             Controller.getInstance(this).addToRequestQueue(jsonObjectRequest);

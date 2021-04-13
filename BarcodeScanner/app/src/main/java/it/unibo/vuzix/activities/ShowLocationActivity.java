@@ -1,8 +1,10 @@
 package it.unibo.vuzix.activities;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.Button;
@@ -13,6 +15,7 @@ import android.widget.Toast;
 import com.android.volley.Request;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,7 +42,7 @@ public class ShowLocationActivity extends Activity implements View.OnClickListen
     private TextView idProduct;
     private EditText productCodeScanned;
 
-    private Order order;
+    private Order order = new Order();
     private int counter = 0;
     private Forklift forklift;
 
@@ -54,10 +57,12 @@ public class ShowLocationActivity extends Activity implements View.OnClickListen
         this.okButton = findViewById(R.id.okButton);
         this.okButton.setOnClickListener(this);
 
-        //TODO riguardare
         Bundle bundle = getIntent().getExtras();
-        order = (Order) bundle.get(ORDER_KEY);
         forklift = (Forklift) bundle.get(FORKLIFT_KEY);
+        order = (Order) bundle.get(ORDER_KEY);
+
+        System.out.println("SLA   Order " + order);
+        System.out.println("SLA   Forklift " + forklift);
 
         this.locationElement = findViewById(R.id.textElemLocation);
         this.quantity = findViewById(R.id.quantity);
@@ -70,30 +75,35 @@ public class ShowLocationActivity extends Activity implements View.OnClickListen
 
     @Override
     public void onClick(View view) {
-        if (view.getId() == R.id.okButton){
-            if (!productCodeScanned.getText().toString().isEmpty())
-                putProductHere();
-            else
-                Toast.makeText(ShowLocationActivity.this, "scan the product code", Toast.LENGTH_SHORT).show();
-        } else if(view.getId() == R.id.pickedButton){
-            setProductPicker();
-            checkOrderPicked();
-            counter++;
-            updateViewProduct(counter);
+        if(checkProductId()) {
+            if (view.getId() == R.id.okButton) {
+                if (!productCodeScanned.getText().toString().isEmpty())
+                    putProductHere();
+                else
+                    Toast.makeText(ShowLocationActivity.this, "scan the product code", Toast.LENGTH_SHORT).show();
+            } else if (view.getId() == R.id.pickedButton) {
+                setProductPicker();
+                checkOrderPicked();
+                counter++;
+                if (counter < order.getProducts().size())
+                    updateViewProduct(counter);
+            }
         }
+
+    }
+
+    private boolean checkProductId(){
+        return (productCodeScanned.getText().toString()).equals(String.valueOf(order.getProducts().get(counter).getId()));
     }
 
     private void putProductHere(){
         //https://stackoverflow.com/questions/48424033/android-volley-post-request-with-json-object-in-body-and-getting-response-in-str/48424181
 
         int idOrder = order.getProducts().get(counter).getProductInfo().getIdOrder();
-        Integer placement = 0;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) { //TODO check possibili errori
-            placement = forklift.getOrderPlacementMap().getOrDefault(idOrder, 0);
-            if(placement == 0){
-                Toast.makeText(ShowLocationActivity.this, "idOrder not found", Toast.LENGTH_SHORT).show();
-                return;
-            }
+        Integer placement = forklift.getOrderPlacementMap().get(idOrder);
+        if(placement == 0){
+            Toast.makeText(ShowLocationActivity.this, "idOrder not found", Toast.LENGTH_SHORT).show();
+            return;
         }
 
         JSONObject jsonObject = new JSONObject();
@@ -113,12 +123,12 @@ public class ShowLocationActivity extends Activity implements View.OnClickListen
         //            "qty": 5
         //}
         String url = RaspberryAPI.setPutHere(String.valueOf(forklift.getIdRaspberry()), String.valueOf(placement));
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+        StringRequest jsonObjectRequest = new StringRequest(
                 Request.Method.POST,
                 url,
-                null,
-                response -> { /*RESPOND, ma non risponde*/},
+                response -> { },
                 error -> {
+                    System.out.println(url);
                     Toast.makeText(ShowLocationActivity.this, "Error to put a Product", Toast.LENGTH_SHORT).show();
                 }) {
             @Override
@@ -135,35 +145,40 @@ public class ShowLocationActivity extends Activity implements View.OnClickListen
                     return null;
                 }
             }
-            //TODO https://stackoverflow.com/questions/48424033/android-volley-post-request-with-json-object-in-body-and-getting-response-in-str/48424181
         };
         Controller.getInstance(this).addToRequestQueue(jsonObjectRequest);
     }
 
     private void checkOrderPicked() {
         int idOrder = order.getProducts().get(counter).getProductInfo().getIdOrder();
-        if(findProductOfOrder(idOrder, order.getProducts()).isEmpty()){
-            //Order picked
-            Integer placement = 0;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) { //TODO check possibili errori
-                placement = forklift.getOrderPlacementMap().getOrDefault(idOrder, 0);
-                if(placement == 0){
-                    Toast.makeText(ShowLocationActivity.this, "idOrder not found", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+        System.out.println("CHECK ORDER PICKED " + counter + "  su  " + order.getProducts().size());
+        if((order.getProducts().size()-1) == counter || findProductOfOrder(idOrder, order.getProducts()).isEmpty()){
+            System.out.println("CHECK ORDER PICKED");
+            Integer placement = forklift.getOrderPlacementMap().get(idOrder);
+            if(placement == 0){
+                Toast.makeText(ShowLocationActivity.this, "idOrder not found", Toast.LENGTH_SHORT).show();
+                return;
             }
             //localhost:5000/smartForklift/1/placements/1/orderDone
             String url = RaspberryAPI.setOrderPicked(String.valueOf(forklift.getIdRaspberry()), String.valueOf(placement));
-            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+            StringRequest jsonObjectRequest = new StringRequest(
                     Request.Method.POST,
                     url,
-                    null,
-                    response -> { System.out.println(response); },
+                    response -> { System.out.println("PICKED!!!!!!!" + response);
+                    if((order.getProducts().size()-1) >= counter){
+                        Toast.makeText(ShowLocationActivity.this, "Orders COMPLETED!!", Toast.LENGTH_SHORT).show();
+                        this.finish();
+                        //   startActivity(new Intent(this, MainActivity.class));
+                    }},
                     error -> {
-                        //TODO ERROR
                         Toast.makeText(ShowLocationActivity.this, "Error to set picked product", Toast.LENGTH_SHORT).show();
                     });
             Controller.getInstance(this).addToRequestQueue(jsonObjectRequest);
+        }
+        if ((order.getProducts().size()-1) >= counter ){
+            Toast.makeText(ShowLocationActivity.this, "Orders COMPLETED!!", Toast.LENGTH_SHORT).show();
+            this.finish();
+            startActivity(new Intent(this, MainActivity.class));
         }
     }
 
@@ -181,35 +196,35 @@ public class ShowLocationActivity extends Activity implements View.OnClickListen
         order.getProducts().get(counter).getProductInfo().setPicked(true);
 
         int idOrder = order.getProducts().get(counter).getProductInfo().getIdOrder();
-        Integer placement = 0;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) { //TODO check possibili errori
-            placement = forklift.getOrderPlacementMap().getOrDefault(idOrder, 0);
+        Integer placement = forklift.getOrderPlacementMap().get(idOrder);
             if(placement == 0){
                 Toast.makeText(ShowLocationActivity.this, "idOrder not found", Toast.LENGTH_SHORT).show();
                 return;
             }
-        }
 
         JSONObject jsonObject = new JSONObject();
         //https://stackoverflow.com/questions/48424033/android-volley-post-request-with-json-object-in-body-and-getting-response-in-str/48424181
         //CREATE JsonObject that represents the body request
+        //{
+        //    "placement_id": 2,
+        //    "order_id": 447499
+        //}
         try {
-            jsonObject.put("product_code", order.getProducts().get(counter).getId());
+            jsonObject.put("placement_id", placement);
+            jsonObject.put("order_id", order.getProducts().get(counter).getProductInfo().getIdOrder());
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
         final String mRequestBody = jsonObject.toString();
-
         //POST localhost:5000/smartForklift/1/placements/1/picked
         String url = RaspberryAPI.setProductPicked(String.valueOf(forklift.getIdRaspberry()), String.valueOf(placement));
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+        StringRequest jsonObjectRequest = new StringRequest(
                 Request.Method.POST,
                 url,
-                null,
-                response -> { /*RESPOND, ma non risponde*/},
+                response -> { },
                 error -> {
-                    //TODO ERROR
+                    System.out.println(url);
                     Toast.makeText(ShowLocationActivity.this, "Error to picked a Product", Toast.LENGTH_SHORT).show();
                 }) {
                 @Override
@@ -226,15 +241,19 @@ public class ShowLocationActivity extends Activity implements View.OnClickListen
                         return null;
                     }
                 }
-                //TODO https://stackoverflow.com/questions/48424033/android-volley-post-request-with-json-object-in-body-and-getting-response-in-str/48424181
             };
         Controller.getInstance(this).addToRequestQueue(jsonObjectRequest);
 
     }
 
     private void updateViewProduct(int index){
-        locationElement.setText(order.getProducts().get(index).getWarehousePlace());
-        quantity.setText(order.getProducts().get(index).getProductInfo().getQuantity());
-        idProduct.setText(order.getProducts().get(index).getId());
+/*        System.out.println("0. "+order.getProducts());
+        System.out.println("0. "+order.getProducts().get(index));
+        System.out.println("0. " + (order.getProducts().get(index)).getWarehousePlace());
+        */
+        locationElement.setText((order.getProducts().get(index)).getWarehousePlace());
+        quantity.setText(""+((order.getProducts().get(index)).getProductInfo()).getQuantity());
+        idProduct.setText(""+(order.getProducts().get(index)).getId());
     }
+
 }

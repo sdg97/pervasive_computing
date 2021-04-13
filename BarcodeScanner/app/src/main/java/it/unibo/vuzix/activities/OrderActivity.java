@@ -49,17 +49,18 @@ public class OrderActivity extends Activity implements View.OnClickListener {
         //TODO
         Bundle bundle = getIntent().getExtras();
         forklift = (Forklift) bundle.get(FORKLIFT_KEY);
+        System.out.println("Forklift " + forklift);
 
         //TODO
         //shared forklift with OrderActivity
-        Intent intent = new Intent(this, OrderActivity.class);
-        intent.putExtra(FORKLIFT_KEY, forklift);
-        startActivityForResult(intent, ACTIVITY_ORDER_CODE);
+
+        //startActivityForResult(intent, ACTIVITY_ORDER_CODE);
 
         confirmButton = findViewById(R.id.confermOrderButton);
         confirmButton.setEnabled(false);
         confirmButton.setOnClickListener(this);
 
+        System.out.println("OrderActivity");
         backButton = findViewById(R.id.backButtonOrder);
         backButton.setOnClickListener(this);
 
@@ -99,6 +100,8 @@ public class OrderActivity extends Activity implements View.OnClickListener {
     }
 
     private <T> void launchActivity(Class<T> clazz) {
+        Intent intent = new Intent(this, OrderActivity.class);
+        intent.putExtra(FORKLIFT_KEY, forklift);
         startActivity(new Intent(this, clazz));
     }
 
@@ -108,17 +111,17 @@ public class OrderActivity extends Activity implements View.OnClickListener {
             if(setPlacementOrder());
                 numOrder++;
 
+            System.out.println("N.Placement " + forklift.getPlacementNumber() );
             if (numOrder < forklift.getPlacementNumber()) {
                 addNewOrderDialog();
             } else {
                 startOrderService();
                 Toast.makeText(OrderActivity.this, "You have reached the maximum number of orders that can be managed", Toast.LENGTH_SHORT).show();
-                launchActivity(ShowLocationActivity.class);
+                //launchActivity(ShowLocationActivity.class);
             }
         } else if (view.getId() == R.id.backButtonOrder) { //BACK
             System.out.println("back");
-            //TODO It's right?!?!?
-            OrderActivity.this.finish();
+            this.finish();
             setContentView(R.layout.activity_connect);
         }
     }
@@ -142,7 +145,7 @@ public class OrderActivity extends Activity implements View.OnClickListener {
                 e.printStackTrace();
             }
             final String mRequestBody = jsonObject.toString();
-            forklift.addElementMap(Integer.getInteger(orderCode), Integer.getInteger(placementCode));
+            forklift.addElementMap(Integer.parseInt(orderCode), Integer.parseInt(placementCode));
 
             //POST localhost:5000/smartForklift/idRASPBERRRY/action/setPlacement
             //body: {
@@ -213,16 +216,18 @@ public class OrderActivity extends Activity implements View.OnClickListener {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 startOrderService();
+                Toast.makeText(OrderActivity.this, "Loading . . .", Toast.LENGTH_SHORT).show();
 
                 dialog.dismiss();
-                OrderActivity.this.finish();
-                launchActivity(ShowLocationActivity.class);
+                //OrderActivity.this.finish();
+                //launchActivity(ShowLocationActivity.class);
             }
         });
         ab.show();
     }
 
     private void startOrderService(){
+        System.out.println("----------------------------START SERVIC");
         Intent intent = new Intent(this, OrderService.class);
         intent.putExtra(FORKLIFT_KEY, forklift);//TODO penso di poterlo fare
         startService(intent);

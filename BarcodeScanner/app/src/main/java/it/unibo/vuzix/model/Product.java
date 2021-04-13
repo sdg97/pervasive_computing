@@ -18,24 +18,29 @@ public class Product implements Parcelable {
     private int id;
     private String codicesenza;
     private String warehousePlace;
-    private ProductInfo productInfo; //TODO
+    private ProductInfo productInfo = new ProductInfo();
 
     public Product(){
 
     }
 
     protected Product(Parcel in) {
+        this.id = in.readInt();
         this.codicesenza = in.readString();
         this.warehousePlace = in.readString();
-        this.id = in.readInt();
-        /*this.productInfo = new ArrayList<>();
-        in.readList(productInfo, ProductInfo.class.getClassLoader());*/
-        this.productInfo = new ProductInfo();
+        this.productInfo = in.readParcelable(ProductInfo.class.getClassLoader());
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int flags) {
+        parcel.writeInt(this.id);
+        parcel.writeString(this.codicesenza);
+        parcel.writeString(this.warehousePlace);
+        parcel.writeParcelable(this.productInfo, flags);
     }
 
     //metodo che fa il parse di un JSONObject ; costruisce e restituisce il prodotto
     // in base al JSONObject passato in ingresso
-    //TODO
     public static List<Product> from(JSONObject jsonObject){
         List<Product> products = new ArrayList<>();
         try {
@@ -55,20 +60,6 @@ public class Product implements Parcelable {
 
                 products.add(product);
             }
-
-            /*
-            *  product.setId(jsonObject.getJSONObject("items").getInt("id"));
-            product.setWarehousePlace(jsonObject.getJSONObject("items").getString("warehouse_place"));
-            product.setCodicesenza(jsonObject.getJSONObject("items").getString("Codicesenza"));
-            productInfo1.setQuantity(jsonObject.getJSONObject("items").getInt("qta"));
-            productInfo1.setIdOrder(jsonObject.getInt("id"));
-            product.setProductInfo(productInfo1);
-            * */
-
-            //product.setId(jsonObject.getInt("id"));
-            //product.setCodicesenza(jsonObject.getString("Codicesenza"));
-            //product.setWarehousePlace(jsonObject.getString("warehouse_place"));
-            //product.setListInfo(jsonObject.getJSONArray(""));
         } catch (JSONException e) {
             e.printStackTrace();
             return null;
@@ -93,14 +84,7 @@ public class Product implements Parcelable {
         return 0;
     }
 
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeInt(this.id);
-        parcel.writeString(this.codicesenza);
-        parcel.writeString(this.warehousePlace);
-        //parcel.writeTypedList(this.productInfo);
-        //TODO ????? parcel.write
-    }
+
 
     /***
      * Setter e getter
@@ -167,5 +151,15 @@ public class Product implements Parcelable {
     @Override
     public int hashCode() {
         return Objects.hash(codicesenza, warehousePlace, id, productInfo);
+    }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", codicesenza='" + codicesenza + '\'' +
+                ", warehousePlace='" + warehousePlace + '\'' +
+                ", productInfo=" + productInfo +
+                '}';
     }
 }

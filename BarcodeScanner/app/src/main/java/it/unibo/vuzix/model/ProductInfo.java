@@ -106,4 +106,12 @@ public class ProductInfo implements Parcelable {
     }
 
 
+    @Override
+    public String toString() {
+        return "ProductInfo{" +
+                "idOrder=" + idOrder +
+                ", quantity=" + quantity +
+                ", picked=" + picked +
+                '}';
+    }
 }

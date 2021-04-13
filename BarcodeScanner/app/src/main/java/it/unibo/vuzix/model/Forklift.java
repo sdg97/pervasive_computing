@@ -3,6 +3,8 @@ package it.unibo.vuzix.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +25,7 @@ public class Forklift implements Parcelable {
     protected Forklift(Parcel in) {
         this.idRaspberry = in.readInt();
         this.jwt = in.readString();
+        this.placementNumber = in.readInt();
         this.orderPlacementMap = new HashMap<>();
         in.readMap(orderPlacementMap, Integer.class.getClassLoader());
     }
@@ -48,6 +51,7 @@ public class Forklift implements Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeInt(this.idRaspberry);
         parcel.writeString(this.jwt);
+        parcel.writeInt(this.placementNumber);
         parcel.writeMap(this.orderPlacementMap);
     }
 
@@ -83,7 +87,7 @@ public class Forklift implements Parcelable {
     }
 
     public List<Integer> getAllOrders(){
-        return (List<Integer>) this.orderPlacementMap.values();
+        return new ArrayList<Integer>(this.orderPlacementMap.keySet());
     }
 
     public int getPlacementNumber() {
@@ -92,5 +96,15 @@ public class Forklift implements Parcelable {
 
     public void setPlacementNumber(int placementNumber) {
         this.placementNumber = placementNumber;
+    }
+
+    @Override
+    public String toString() {
+        return "Forklift{" +
+                "idRaspberry=" + idRaspberry +
+                ", jwt='" + jwt + '\'' +
+                ", orderPlacementMap=" + orderPlacementMap +
+                ", placementNumber=" + placementNumber +
+                '}';
     }
 }
