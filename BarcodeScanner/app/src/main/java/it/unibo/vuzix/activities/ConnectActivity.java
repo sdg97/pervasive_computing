@@ -30,7 +30,7 @@ import static it.unibo.vuzix.model.Forklift.FORKLIFT_KEY;
 
 public class ConnectActivity extends Activity implements View.OnClickListener{
 
-    private static final int ACTIVITY_CONNECT_CODE = 1;
+    private static final int PLACEMENT_NUMBER = 2;
     private Forklift forklift;
 
     private Button confirmButton;
@@ -84,7 +84,6 @@ public class ConnectActivity extends Activity implements View.OnClickListener{
         if (view.getId() == R.id.button) {
             startUse(boxCode.getText().toString()); //I want to start to use the barcode scanned
             setJwtForklift();
-            System.out.println("aftrer start");
         } else if (view.getId() == R.id.button4){
             System.out.println("back");
             this.finish();
@@ -116,7 +115,6 @@ public class ConnectActivity extends Activity implements View.OnClickListener{
                         forklift.setJwt(response.getString("jwt"));
                         System.out.println(forklift.getJwt());
                         launchActivity(OrderActivity.class);
-
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -131,19 +129,14 @@ public class ConnectActivity extends Activity implements View.OnClickListener{
         System.out.println("I want to connect to raspberry " + boxBarcode);
 
         if (isValid(boxBarcode)) {
-            //set the id of Raspberry = box
             this.forklift.setIdRaspberry(Integer.parseInt(boxBarcode));
-            this.forklift.setPlacementNumber(2);
+            this.forklift.setPlacementNumber(PLACEMENT_NUMBER);
             //localhost:5000/smartForklift/1/action/startUse
             String url = RaspberryAPI.setStartUse(boxBarcode);
             StringRequest jsonObjectRequest = new StringRequest(
                     Request.Method.POST,
                     url,
-                    response -> {
-                        System.out.println("Risposta " + response.toString()); //niente
-                        //forklift.setPlacementNumber(response.getJSONArray("placements").length());
-
-                    },
+                    response -> { },
                     error -> {
                         System.out.println(error);
                         Toast.makeText(ConnectActivity.this, "Connection error to the box", Toast.LENGTH_SHORT).show();

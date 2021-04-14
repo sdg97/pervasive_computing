@@ -14,8 +14,7 @@ import java.util.Objects;
 // TODO https://www.vogella.com/tutorials/AndroidParcelable/article.html
 //TODO https://guides.codepath.com/android/using-parcelable
 public class Product implements Parcelable {
-    //TODO tutte le info sono contenute in item a parte la lista di productInfo
-    private int id;
+    private String id;
     private String codicesenza;
     private String warehousePlace;
     private ProductInfo productInfo = new ProductInfo();
@@ -25,7 +24,7 @@ public class Product implements Parcelable {
     }
 
     protected Product(Parcel in) {
-        this.id = in.readInt();
+        this.id = in.readString();
         this.codicesenza = in.readString();
         this.warehousePlace = in.readString();
         this.productInfo = in.readParcelable(ProductInfo.class.getClassLoader());
@@ -33,7 +32,7 @@ public class Product implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int flags) {
-        parcel.writeInt(this.id);
+        parcel.writeString(this.id);
         parcel.writeString(this.codicesenza);
         parcel.writeString(this.warehousePlace);
         parcel.writeParcelable(this.productInfo, flags);
@@ -52,7 +51,7 @@ public class Product implements Parcelable {
                 ProductInfo productInfo1 = new ProductInfo();
                 productInfo1.setIdOrder(jsonObject.getInt("id"));
 
-                product.setId(jsonObject.getJSONArray("items").getJSONObject(i).getInt("id"));
+                product.setId(jsonObject.getJSONArray("items").getJSONObject(i).getString("barcode"));
                 product.setWarehousePlace(jsonObject.getJSONArray("items").getJSONObject(i).getString("warehouse_place"));
                 product.setCodicesenza(jsonObject.getJSONArray("items").getJSONObject(i).getString("Codicesenza"));
                 productInfo1.setQuantity(jsonObject.getJSONArray("items").getJSONObject(i).getInt("qta"));
@@ -93,7 +92,7 @@ public class Product implements Parcelable {
         this.codicesenza = codicesenza;
     }
 
-    public void setId(int id){
+    public void setId(String id){
         this.id = id;
     }
 
@@ -113,7 +112,7 @@ public class Product implements Parcelable {
         return warehousePlace;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 

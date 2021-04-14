@@ -34,9 +34,7 @@ import it.unibo.vuzix.api.RaspberryAPI;
 import static it.unibo.vuzix.model.Forklift.FORKLIFT_KEY;
 
 public class OrderActivity extends Activity implements View.OnClickListener {
-    private static final int ACTIVITY_ORDER_CODE = 2;
     private Button confirmButton;
-    private Button backButton;
     private EditText orderEditText;
     private EditText placementEditText;
     private int numOrder = 0;
@@ -47,23 +45,13 @@ public class OrderActivity extends Activity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order);
 
-        //TODO
         Bundle bundle = getIntent().getExtras();
         forklift = (Forklift) bundle.get(FORKLIFT_KEY);
         System.out.println("Forklift " + forklift);
 
-        //TODO
-        //shared forklift with OrderActivity
-
-        //startActivityForResult(intent, ACTIVITY_ORDER_CODE);
-
         confirmButton = findViewById(R.id.confermOrderButton);
         confirmButton.setEnabled(false);
         confirmButton.setOnClickListener(this);
-
-        System.out.println("OrderActivity");
-        backButton = findViewById(R.id.backButtonOrder);
-        backButton.setOnClickListener(this);
 
         orderEditText = findViewById(R.id.barcodeOrder);
         orderEditText.addTextChangedListener(new TextWatcher() {
@@ -100,12 +88,6 @@ public class OrderActivity extends Activity implements View.OnClickListener {
         });
     }
 
-    private <T> void launchActivity(Class<T> clazz) {
-        Intent intent = new Intent(this, OrderActivity.class);
-        intent.putExtra(FORKLIFT_KEY, forklift);
-        startActivity(new Intent(this, clazz));
-    }
-
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.confermOrderButton) { //CONFERM
@@ -118,26 +100,17 @@ public class OrderActivity extends Activity implements View.OnClickListener {
             } else {
                 startOrderService();
                 Toast.makeText(OrderActivity.this, "You have reached the maximum number of orders that can be managed", Toast.LENGTH_SHORT).show();
-                //launchActivity(ShowLocationActivity.class);
             }
-        } else if (view.getId() == R.id.backButtonOrder) { //BACK
-            System.out.println("back");
-            this.finish();
-            setContentView(R.layout.activity_connect);
         }
     }
 
-    private boolean isValid(String toString) {
-        return !toString.isEmpty();
-    }
-
     private boolean setPlacementOrder() {
-        /*String*/ Integer orderCode = Integer.valueOf(orderEditText.getText().toString()); //TODO String direttamente?
-        /*String*/ Integer placementCode = Integer.valueOf(placementEditText.getText().toString());
+        Integer orderCode = Integer.valueOf(orderEditText.getText().toString());
+        Integer placementCode = Integer.valueOf(placementEditText.getText().toString());
         System.out.println("Confirm to connect order " + orderCode + " to placement " + placementCode);
         JSONObject jsonObject = new JSONObject();
         //https://stackoverflow.com/questions/48424033/android-volley-post-request-with-json-object-in-body-and-getting-response-in-str/48424181
-        //if (isValid(orderCode) && isValid(placementCode)) {
+
             forklift.addElementMap(orderCode, placementCode);
 
             //CREATE JsonObject that represents the body request
@@ -155,11 +128,11 @@ public class OrderActivity extends Activity implements View.OnClickListener {
             //    "order_id": 447499
             //}
             String url = RaspberryAPI.setPlacement(String.valueOf(this.forklift.getIdRaspberry()));
-            System.out.println("ORDER ACTIVITI " + url);
+            System.out.println("ORDER ACTIVITY " + url);
             StringRequest jsonObjectRequest = new StringRequest(
                     Request.Method.POST,
                     url,
-                    response -> { /*RESPOND, ma non risponde*/},
+                    response -> {},
                     error -> {
                         Toast.makeText(OrderActivity.this, "Error to set placement-order", Toast.LENGTH_SHORT).show();
                     }) {
@@ -180,10 +153,7 @@ public class OrderActivity extends Activity implements View.OnClickListener {
 
                     };
             Controller.getInstance(this).addToRequestQueue(jsonObjectRequest);
-       /* } else {
-            Toast.makeText(OrderActivity.this, "Get valid box/order code", Toast.LENGTH_SHORT).show();
-            return false;
-        }*/
+
         return true;
     }
 
@@ -191,34 +161,27 @@ public class OrderActivity extends Activity implements View.OnClickListener {
         AlertDialog.Builder ab = new AlertDialog.Builder(OrderActivity.this);
         ab.setTitle("Would you add an other order?");
         ab.setMessage("Would you add an other order?");
-        ab.setPositiveButton("yes", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-                //todo reload the same activity
-                orderEditText.setText("");
-                placementEditText.setText("");
-                confirmButton.setEnabled(false);
-            }
+        ab.setPositiveButton("yes", (dialog, which) -> {
+            dialog.dismiss();
+            //todo reload the same activity
+            orderEditText.setText("");
+            placementEditText.setText("");
+            confirmButton.setEnabled(false);
+            this.placementEditText.requestFocus();
         });
-        ab.setNegativeButton("no", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                startOrderService();
-                Toast.makeText(OrderActivity.this, "Loading . . .", Toast.LENGTH_SHORT).show();
-
-                dialog.dismiss();
-                //OrderActivity.this.finish();
-                //launchActivity(ShowLocationActivity.class);
-            }
+        ab.setNegativeButton("no", (dialog, which) -> {
+            startOrderService();
+            Toast.makeText(OrderActivity.this, "Loading . . .", Toast.LENGTH_SHORT).show();
+            dialog.dismiss();
+            OrderActivity.this.finish();
         });
         ab.show();
     }
 
     private void startOrderService(){
-        System.out.println("----------------------------START SERVIC");
+        System.out.println("----------------------------START SERVICE");
         Intent intent = new Intent(this, OrderService.class);
-        intent.putExtra(FORKLIFT_KEY, forklift);//TODO penso di poterlo fare
+        intent.putExtra(FORKLIFT_KEY, forklift);
         startService(intent);
     }
 

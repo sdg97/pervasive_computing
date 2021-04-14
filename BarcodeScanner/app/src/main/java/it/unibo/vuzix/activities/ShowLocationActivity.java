@@ -81,24 +81,22 @@ public class ShowLocationActivity extends Activity implements View.OnClickListen
                     putProductHere();
             } else if (view.getId() == R.id.pickedButton) {
                 setProductPicker();
+                this.productCodeScanned.setText("");
+                int c = counter;
                 new android.os.Handler(Looper.getMainLooper()).postDelayed(
-                        new Runnable() {
-                            public void run() {
-                                checkOrderPicked();
-                                counter++;
-                                if (counter < order.getProducts().size())
-                                    updateViewProduct(counter);
-                            }
-                        },
-                        5000);
+                        () -> checkOrderPicked(c),5000);
+                counter++;
+                if (counter < order.getProducts().size())
+                    updateViewProduct(counter);
             }
+            this.productCodeScanned.requestFocus();
         } else
             Toast.makeText(ShowLocationActivity.this, "scan the product code", Toast.LENGTH_SHORT).show();
 
     }
 
     private boolean checkProductId(){
-        return (productCodeScanned.getText().toString()).equals(String.valueOf(order.getProducts().get(counter).getId()));
+        return (productCodeScanned.getText().toString()).equals(order.getProducts().get(counter).getId());
     }
 
     private void putProductHere(){
@@ -115,7 +113,7 @@ public class ShowLocationActivity extends Activity implements View.OnClickListen
         //CREATE JsonObject that represents the body request
         try {
             jsonObject.put("product_code", productCodeScanned.getText().toString());//order.getProducts().get(counter).getId());
-            jsonObject.put("qty", order.getProducts().get(counter).getProductInfo().getQuantity());
+            jsonObject.put("qty", idOrder);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -154,12 +152,12 @@ public class ShowLocationActivity extends Activity implements View.OnClickListen
         Controller.getInstance(this).addToRequestQueue(jsonObjectRequest);
     }
 
-    private void checkOrderPicked() {
-        int idOrder = order.getProducts().get(counter).getProductInfo().getIdOrder();
-        System.out.println("CHECK ORDER PICKED " + counter + "  su  " + order.getProducts().size());
+    private void checkOrderPicked(int c) {
+        int idOrder = order.getProducts().get(c).getProductInfo().getIdOrder();
+        System.out.println("CHECK ORDER PICKED " + c + "  su  " + order.getProducts().size());
         System.out.println("FOUND " + findProductOfOrder(idOrder, order.getProducts()).toString());
 
-        if(/*(order.getProducts().size()-1) == counter ||*/ findProductOfOrder(idOrder, order.getProducts()).isEmpty()){
+        if(findProductOfOrder(idOrder, order.getProducts()).isEmpty()){
 
             Integer placement = forklift.getOrderPlacementMap().get(idOrder);
             System.out.println("CHECK ORDER PICKED" + placement);
@@ -174,7 +172,7 @@ public class ShowLocationActivity extends Activity implements View.OnClickListen
                     Request.Method.POST,
                     url,
                     response -> { System.out.println("ORDER DONE!!!!!!!" + response);
-                        if ((order.getProducts().size()) == counter){
+                        if ((order.getProducts().size())-1 == c){
                             Toast.makeText(ShowLocationActivity.this, "Orders COMPLETED!!", Toast.LENGTH_SHORT).show();
                             this.finish();
                             startActivity(new Intent(this, MainActivity.class));
@@ -190,9 +188,7 @@ public class ShowLocationActivity extends Activity implements View.OnClickListen
         final List<Integer> indexList = new ArrayList<>();
         if(counter+1 < list.size())
         for (int i = counter+1; i < list.size(); i++) {
-            System.out.println("FIND " + orderId + "equals " + list.get(i).getProductInfo().getIdOrder());
             if (orderId == (list.get(i).getProductInfo().getIdOrder())) {
-                System.out.println("EEQUALSSSSS");
                 indexList.add(orderId);
             }
         }
