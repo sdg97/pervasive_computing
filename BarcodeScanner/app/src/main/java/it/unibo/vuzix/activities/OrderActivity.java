@@ -132,13 +132,13 @@ public class OrderActivity extends Activity implements View.OnClickListener {
     }
 
     private boolean setPlacementOrder() {
-        String orderCode = orderEditText.getText().toString(); //TODO String direttamente?
-        String placementCode = placementEditText.getText().toString();
+        /*String*/ Integer orderCode = Integer.valueOf(orderEditText.getText().toString()); //TODO String direttamente?
+        /*String*/ Integer placementCode = Integer.valueOf(placementEditText.getText().toString());
         System.out.println("Confirm to connect order " + orderCode + " to placement " + placementCode);
         JSONObject jsonObject = new JSONObject();
         //https://stackoverflow.com/questions/48424033/android-volley-post-request-with-json-object-in-body-and-getting-response-in-str/48424181
-        if (isValid(orderCode) && isValid(placementCode)) {
-            forklift.addElementMap(Integer.parseInt(orderCode), Integer.parseInt(placementCode));
+        //if (isValid(orderCode) && isValid(placementCode)) {
+            forklift.addElementMap(orderCode, placementCode);
 
             //CREATE JsonObject that represents the body request
             try {
@@ -180,10 +180,10 @@ public class OrderActivity extends Activity implements View.OnClickListener {
 
                     };
             Controller.getInstance(this).addToRequestQueue(jsonObjectRequest);
-        } else {
+       /* } else {
             Toast.makeText(OrderActivity.this, "Get valid box/order code", Toast.LENGTH_SHORT).show();
             return false;
-        }
+        }*/
         return true;
     }
 

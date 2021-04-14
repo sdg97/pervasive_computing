@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -77,18 +78,22 @@ public class ShowLocationActivity extends Activity implements View.OnClickListen
     public void onClick(View view) {
         if(checkProductId()) {
             if (view.getId() == R.id.okButton) {
-                if (!productCodeScanned.getText().toString().isEmpty())
                     putProductHere();
-                else
-                    Toast.makeText(ShowLocationActivity.this, "scan the product code", Toast.LENGTH_SHORT).show();
             } else if (view.getId() == R.id.pickedButton) {
                 setProductPicker();
-                checkOrderPicked();
-                counter++;
-                if (counter < order.getProducts().size())
-                    updateViewProduct(counter);
+                new android.os.Handler(Looper.getMainLooper()).postDelayed(
+                        new Runnable() {
+                            public void run() {
+                                checkOrderPicked();
+                                counter++;
+                                if (counter < order.getProducts().size())
+                                    updateViewProduct(counter);
+                            }
+                        },
+                        5000);
             }
-        }
+        } else
+            Toast.makeText(ShowLocationActivity.this, "scan the product code", Toast.LENGTH_SHORT).show();
 
     }
 
