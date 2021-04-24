@@ -1,4 +1,0 @@
-mas test_speech {    
-    agent speaker_1 : speaker1.asl
-    agent speaker_2  : speaker2.asl 
-}
