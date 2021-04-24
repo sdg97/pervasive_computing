@@ -77,7 +77,6 @@ def publicConfig():
 @libs.cors.crossdomain(origin='*')
 def smartForkliftAction(id, action_name):
     getConfig(id)
-    ## Controllo se l'azione è concessa
     if flask.request.get_json() is not None:
         action_data = flask.request.get_json()
         saveAction(id, action_name, action_data)
@@ -90,7 +89,6 @@ def smartForkliftAction(id, action_name):
 @libs.cors.crossdomain(origin='*')
 def placementsAction(s_id, p_id, action_name):
     getConfig(s_id)
-    ## Controllo se l'azione è concessa
     if flask.request.get_json() is not None:
         action_data = flask.request.get_json()
         saveAction(s_id, action_name, action_data, p_id)

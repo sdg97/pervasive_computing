@@ -1,5 +1,4 @@
-# pervasive_computing
-Alma mater studiorum pervasive computing course attempts, notes and project. 
+### SmartForklift - pervasive computing
+Simone Del Gatto - 952242 simone.delgatto@studio.unibo.it
 
-### NB
-Actually JaCaMo 0.9 system installation is required.
+Sophia Fantoni - 933149 sophia.fantoni@studio.unibo.it
