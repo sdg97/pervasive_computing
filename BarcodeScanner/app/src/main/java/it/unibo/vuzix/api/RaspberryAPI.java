@@ -11,11 +11,15 @@ public class RaspberryAPI {
     private static final String PICKED = "picked";
     private static final String ORDERDONE = "orderDone";
 
-
     private static String getBaseResourceURL () {
         return BASE_URL + FORKLIFT;
     }
 
+    /**
+     * I want to use the raspberry
+     * @param idRaspberry id of Raspberry (SmartForklift device)
+     * @return url
+     */
     public static String setStartUse(String idRaspberry){
         return getBaseResourceURL() + idRaspberry + "/" +
                 ACTION +
@@ -28,8 +32,8 @@ public class RaspberryAPI {
      *     "placement_id": 1,
      *     "order_id": 447499
      * }
-     * @param idRaspberry
-     * @return
+     * @param idRaspberry id of Raspberry (SmartForklift device)
+     * @return url
      */
     public static String setPlacement(String idRaspberry){
         return getBaseResourceURL() + idRaspberry + "/" +
@@ -38,15 +42,15 @@ public class RaspberryAPI {
     }
 
     /**
-     * Per dire "Raspberry fai vedere dove il magazziniere deve mettere il prodotto'
+     * Raspberry show where the warehouseman has to put the product
      * POST http://52.19.198.62/smartForklift/1/placements/1/action/putItHere
      * body: {
      *     "product_code": 2314332434,
      *     "qty": 5
      * }
-     * @param idRaspberry
-     * @param idPlacement
-     * @return
+     * @param idRaspberry id of Raspberry (SmartForklift device)
+     * @param idPlacement id of placement (label)
+     * @return url
      */
     public static String setPutHere(String idRaspberry, String idPlacement){
         return getBaseResourceURL() +
@@ -56,6 +60,12 @@ public class RaspberryAPI {
                 PUTITHERE;
     }
 
+    /**
+     * set the product of the placement picked
+     * @param idRaspberry id of Raspberry (SmartForklift device)
+     * @param idPlacement id of placement (label)
+     * @return url
+     */
     public static String setProductPicked(String idRaspberry, String idPlacement){
         return getBaseResourceURL() +
                 idRaspberry + "/" +
@@ -64,6 +74,12 @@ public class RaspberryAPI {
                 PICKED;
     }
 
+    /**
+     * order completed
+     * @param idRaspberry id of Raspberry (SmartForklift device)
+     * @param idPlacement id of placement (label)
+     * @return url
+     */
     public static String setOrderPicked(String idRaspberry, String idPlacement){
         return getBaseResourceURL() +
                 idRaspberry + "/" +

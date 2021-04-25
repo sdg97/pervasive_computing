@@ -13,7 +13,6 @@ public class Controller {
 
     private Controller(Context context){
         this.context = context;
-        //requestQueue = getRequestQueue();
         requestQueue = Volley.newRequestQueue(context.getApplicationContext());
     }
 
@@ -25,11 +24,6 @@ public class Controller {
     }
 
     public RequestQueue getRequestQueue() {
-       /* if (requestQueue == null) {
-            // getApplicationContext() is key, it keeps you from leaking the
-            // Activity or BroadcastReceiver if someone passes one in.
-            requestQueue = Volley.newRequestQueue(context.getApplicationContext());
-        }*/
         return requestQueue;
     }
 
