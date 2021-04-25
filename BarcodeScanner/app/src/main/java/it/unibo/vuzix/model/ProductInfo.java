@@ -12,8 +12,10 @@ public class ProductInfo implements Parcelable {
     private int quantity;
     private boolean picked = false;
 
-    //metodo statico CREATOR: oggetto che implementa l'interfaccia Parcelable.Creator
-    // per ricostruire la classe che implementa Parcelable
+    /**
+     * Constructor and method of Parcelable
+     */
+
     public static final Creator<ProductInfo> CREATOR = new Creator<ProductInfo>() {
         @Override
         public ProductInfo createFromParcel(Parcel parcel) {
@@ -39,8 +41,6 @@ public class ProductInfo implements Parcelable {
     public static ProductInfo from(JSONObject jsonObject){
         ProductInfo productInfo = new ProductInfo();
         try {
-            //In base al Json restituito dalla chiamata
-            //http://it2.life365.eu/api/order/idOrder?jwt=...
             productInfo.setIdOrder(jsonObject.getInt("id"));
             productInfo.setQuantity(jsonObject.getJSONObject("items").getInt("qta"));
             productInfo.setPicked(false); //TODO serve?!
@@ -49,22 +49,6 @@ public class ProductInfo implements Parcelable {
             return null;
         }
         return productInfo;
-    }
-
-    //TODO
-    public JSONObject toJson(){
-        //N.B ATTENZIONE A DARE AI CAMPI LO STESSO NOME DEL jSON
-        // ottenuto mediante la risposta
-
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("id", getIdOrder());
-            jsonObject.put("qta", getQuantity());
-            jsonObject.put("picked", isPicked()); //TODO riguardare se serve e come viene usato
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return jsonObject;
     }
 
     @Override
@@ -80,7 +64,10 @@ public class ProductInfo implements Parcelable {
     }
 
 
-    //Getter e Setter
+    /*
+     * Getter e Setter
+     */
+
     public int getIdOrder() {
         return idOrder;
     }
@@ -97,14 +84,13 @@ public class ProductInfo implements Parcelable {
         this.quantity = quantity;
     }
 
-    public boolean isPicked() {
-        return picked;
-    }
-
     public void setPicked(boolean picked) {
         this.picked = picked;
     }
 
+    /**
+     * toString
+     */
 
     @Override
     public String toString() {

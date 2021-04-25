@@ -4,7 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,10 +13,13 @@ public class Forklift implements Parcelable {
     public static final String FORKLIFT_KEY = "FORKLIFT";
 
     private int idRaspberry;
-    private String jwt; //Lo vedo come id del magazziniere che si logga
-    private Map<Integer, Integer> orderPlacementMap;
+    private String jwt; //id Worker
+    private final Map<Integer, Integer> orderPlacementMap;
     private int placementNumber;
 
+    /**
+     * Constructor and method of Parcelable
+     */
     public Forklift(){
         orderPlacementMap = new HashMap<>();
     }
@@ -58,6 +60,7 @@ public class Forklift implements Parcelable {
     /***
      * Setter e getter
      */
+
     public int getIdRaspberry() {
         return idRaspberry;
     }
@@ -83,7 +86,7 @@ public class Forklift implements Parcelable {
     }
 
     public List<Integer> getAllOrders(){
-        return new ArrayList<Integer>(this.orderPlacementMap.keySet());
+        return new ArrayList<>(this.orderPlacementMap.keySet());
     }
 
     public int getPlacementNumber() {
@@ -93,6 +96,10 @@ public class Forklift implements Parcelable {
     public void setPlacementNumber(int placementNumber) {
         this.placementNumber = placementNumber;
     }
+
+    /**
+     * toString
+     */
 
     @Override
     public String toString() {

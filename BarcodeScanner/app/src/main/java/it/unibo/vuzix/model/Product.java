@@ -10,15 +10,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-//Interface for classes whose instances can be written to and restored from a Parcel.
-// TODO https://www.vogella.com/tutorials/AndroidParcelable/article.html
-//TODO https://guides.codepath.com/android/using-parcelable
 public class Product implements Parcelable {
     private String id;
     private String codicesenza;
     private String warehousePlace;
     private ProductInfo productInfo = new ProductInfo();
 
+    /**
+     * Constructor and method of Parcelable
+     */
     public Product(){
     }
 
@@ -37,15 +37,11 @@ public class Product implements Parcelable {
         parcel.writeParcelable(this.productInfo, flags);
     }
 
-    //metodo che fa il parse di un JSONObject ; costruisce e restituisce il prodotto
-    // in base al JSONObject passato in ingresso
+    // parse of a JSONObject
     public static List<Product> from(JSONObject jsonObject){
         List<Product> products = new ArrayList<>();
         try {
-            //In base al Json restituito dalla chiamata
-            //http://it2.life365.eu/api/order/idOrder?jwt=...
-
-            //Per rendere più veloce la prova mettere 2 qui
+            //To speed up the test put 2 here
             for (int i = 0; i < jsonObject.getJSONArray("items").length(); i++) {
                 Product product = new Product();
                 ProductInfo productInfo1 = new ProductInfo();
@@ -84,7 +80,6 @@ public class Product implements Parcelable {
     }
 
 
-
     /***
      * Setter e getter
      */
@@ -104,10 +99,6 @@ public class Product implements Parcelable {
         this.productInfo = productInfo;
     }
 
-    public String getCodicesenza() {
-        return codicesenza;
-    }
-
     public String getWarehousePlace() {
         return warehousePlace;
     }
@@ -120,21 +111,9 @@ public class Product implements Parcelable {
         return productInfo;
     }
 
-    //TODO
-    public JSONObject toJson(){
-        //N.B ATTENZIONE A DARE AI CAMPI LO STESSO NOME DEL jSON
-        // ottenuto mediante la risposta
-
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("id", getId());
-            jsonObject.put("warehouse_place", getWarehousePlace());
-            jsonObject.put("Codicesenza", getCodicesenza());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return jsonObject;
-    }
+    /**
+     * equals, hashCode, toString
+     */
 
     @Override
     public boolean equals(Object o) {
