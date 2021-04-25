@@ -3,20 +3,20 @@ package it.unibo.vuzix.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class Order  implements Parcelable {
 
-    private List<Product> products = new ArrayList<>(); //TODO
+    private List<Product> products = new ArrayList<>();
 
+    /**
+     * Constructor and method of Parcelable
+     */
     public Order(){    }
 
     protected Order(Parcel in) {
         in.readTypedList(products, Product.CREATOR);
-//        in.readList(products, Product.class.getClassLoader());
     }
 
     public static final Creator<Order> CREATOR = new Creator<Order>() {
@@ -39,8 +39,11 @@ public class Order  implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeTypedList(this.products);
-    ///    parcel.writeList(this.products);
     }
+
+    /**
+     * Getter and Setter
+     */
 
     public List<Product> getProducts() {
         return products;
@@ -50,6 +53,9 @@ public class Order  implements Parcelable {
         this.products = products;
     }
 
+    /**
+     * toString
+     */
     @Override
     public String toString() {
         return "Order{" +
