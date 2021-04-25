@@ -7,11 +7,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 public class MainActivity extends Activity implements View.OnClickListener {
-    Button connectBoxButton;
-    Button exitButton;
+    private Button connectBoxButton;
+    private Button exitButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

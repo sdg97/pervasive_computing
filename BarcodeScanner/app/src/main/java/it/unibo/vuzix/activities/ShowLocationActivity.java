@@ -2,10 +2,8 @@ package it.unibo.vuzix.activities;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
-import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.Button;
@@ -15,7 +13,6 @@ import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 
 import org.json.JSONException;
@@ -59,12 +56,13 @@ public class ShowLocationActivity extends Activity implements View.OnClickListen
         this.okButton.setOnClickListener(this);
 
         Bundle bundle = getIntent().getExtras();
-        forklift = (Forklift) bundle.get(FORKLIFT_KEY);
-        order = (Order) bundle.get(ORDER_KEY);
-
-        System.out.println("SLA   Order " + order);
-        System.out.println("SLA   Forklift " + forklift);
-
+        if(bundle != null){
+            forklift = (Forklift) bundle.get(FORKLIFT_KEY);
+            order = (Order) bundle.get(ORDER_KEY);
+        } else {
+            Toast.makeText(ShowLocationActivity.this, "Error: bundle is null", Toast.LENGTH_SHORT).show();
+            return;
+        }
         this.locationElement = findViewById(R.id.textElemLocation);
         this.quantity = findViewById(R.id.quantity);
         this.idProduct = findViewById(R.id.productCode);
@@ -100,8 +98,6 @@ public class ShowLocationActivity extends Activity implements View.OnClickListen
     }
 
     private void putProductHere(){
-        //https://stackoverflow.com/questions/48424033/android-volley-post-request-with-json-object-in-body-and-getting-response-in-str/48424181
-
         int idOrder = order.getProducts().get(counter).getProductInfo().getIdOrder();
         Integer placement = forklift.getOrderPlacementMap().get(idOrder);
         if(placement == 0){
@@ -134,21 +130,21 @@ public class ShowLocationActivity extends Activity implements View.OnClickListen
                     System.out.println(url);
                     Toast.makeText(ShowLocationActivity.this, "Error to put a Product", Toast.LENGTH_SHORT).show();
                 }) {
-            @Override
-            public String getBodyContentType() {
+                    @Override
+                    public String getBodyContentType() {
                 return "application/json; charset=utf-8";
             }
 
-            @Override
-            public byte[] getBody() {
-                try {
-                    return mRequestBody == null ? null : mRequestBody.getBytes("utf-8");
-                } catch (UnsupportedEncodingException uee) {
-                    VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", mRequestBody, "utf-8");
-                    return null;
-                }
-            }
-        };
+                    @Override
+                    public byte[] getBody() {
+                        try {
+                            return mRequestBody == null ? null : mRequestBody.getBytes("utf-8");
+                        } catch (UnsupportedEncodingException uee) {
+                            VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", mRequestBody, "utf-8");
+                            return null;
+                        }
+                    }
+                };
         Controller.getInstance(this).addToRequestQueue(jsonObjectRequest);
     }
 
@@ -160,7 +156,6 @@ public class ShowLocationActivity extends Activity implements View.OnClickListen
         if(findProductOfOrder(idOrder, order.getProducts()).isEmpty()){
 
             Integer placement = forklift.getOrderPlacementMap().get(idOrder);
-            System.out.println("CHECK ORDER PICKED" + placement);
             if(placement == 0){
                 Toast.makeText(ShowLocationActivity.this, "idOrder not found", Toast.LENGTH_SHORT).show();
                 return;
@@ -207,7 +202,6 @@ public class ShowLocationActivity extends Activity implements View.OnClickListen
             }
 
         JSONObject jsonObject = new JSONObject();
-        //https://stackoverflow.com/questions/48424033/android-volley-post-request-with-json-object-in-body-and-getting-response-in-str/48424181
         //CREATE JsonObject that represents the body request
         //{
         //    "placement_id": 2,
@@ -247,14 +241,9 @@ public class ShowLocationActivity extends Activity implements View.OnClickListen
                 }
             };
         Controller.getInstance(this).addToRequestQueue(jsonObjectRequest);
-
     }
 
     private void updateViewProduct(int index){
-/*        System.out.println("0. "+order.getProducts());
-        System.out.println("0. "+order.getProducts().get(index));
-        System.out.println("0. " + (order.getProducts().get(index)).getWarehousePlace());
-        */
         locationElement.setText((order.getProducts().get(index)).getWarehousePlace());
         quantity.setText(""+((order.getProducts().get(index)).getProductInfo()).getQuantity());
         idProduct.setText(""+(order.getProducts().get(index)).getId());

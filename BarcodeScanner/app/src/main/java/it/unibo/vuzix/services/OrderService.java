@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 import it.unibo.vuzix.activities.OrderActivity;
 import it.unibo.vuzix.activities.ShowLocationActivity;
@@ -37,7 +39,6 @@ public class OrderService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        //forklift = new Forklift();
         orderList = new ArrayList<>();
         productList = new ArrayList<>();
     }
@@ -51,64 +52,56 @@ public class OrderService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         Bundle bundle = intent.getExtras();
-        forklift = (Forklift) bundle.get(FORKLIFT_KEY);
-        System.out.println("ORDER SRVICE Forklift " + forklift);
-        orderList = forklift.getAllOrders();
-        System.out.println("Order " + orderList);
+        if(bundle != null) {
+            forklift = (Forklift) bundle.get(FORKLIFT_KEY);
+            assert forklift != null;
+            orderList = forklift.getAllOrders();
+            System.out.println("Orders " + orderList);
 
-        //per ogni ordine invio la richiesta, quando arriva la risposta mantengo tutto nella lista dei prodotti
-        populateProductList();
-
+            //for each order I send the request, when the answer arrives I keep everything in the list of products
+            populateProductList();
+        }
 
         return START_STICKY;
     }
 
     private void populateProductList(){
-        //https://stackoverflow.com/questions/48424033/android-volley-post-request-with-json-object-in-body-and-getting-response-in-str/48424181
+        System.out.println("ORder list "+ orderList);
+        List<Integer> list = new ArrayList<>();
 
-        //http://it2.life365.eu/api/order/447499?jwt=...
-       // if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) { //TODO possibili errori
-            System.out.println("ORder list "+ orderList);
-            int counter = 0;
-            List<Integer> list = new ArrayList<>();
+        for(int i = 0; i<orderList.size(); i++){
 
-            for(int i = 0; i<orderList.size(); i++){
+            String urls = OrderAPI.getOrderURL(orderList.get(i).toString(), forklift.getJwt());
+            System.out.println(urls);
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                    Request.Method.GET,
+                    urls,
+                   null,
+                    response -> { productList.addAll(Objects.requireNonNull(Product.from(response)));
+                        System.out.println("ORDER SERVICE product list " + productList);
+                        list.add(0);
 
-                String urls = OrderAPI.getOrderURL(orderList.get(i).toString(), forklift.getJwt());
-                System.out.println(urls);
-                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
-                        Request.Method.GET,
-                        urls,
-                        null,
-                        response -> { productList.addAll(Product.from(response));
-                            System.out.println("ORDER SERVICE product list " + productList);
-                            list.add(0);
+                        if(list.size() == orderList.size())     {
+                            Comparator<Product> comparebyWerehouseplace = (Product p1, Product p2) -> p1.getWarehousePlace().compareTo(p2.getWarehousePlace());
+                            Collections.sort(productList, comparebyWerehouseplace);
+                            Order order = new Order();
+                            order.setProducts(productList);
+                            System.out.println("ORDER SERVICE Order " + order);
 
-                            if(list.size() == orderList.size())     {
-                                Comparator<Product> comparebyWerehouseplace = (Product p1, Product p2) -> p1.getWarehousePlace().compareTo(p2.getWarehousePlace());
-                                Collections.sort(productList, comparebyWerehouseplace); //TODO check ordinato
-
-                                Order order = new Order();
-                                order.setProducts(productList);
-                                System.out.println("ORDER SERVICE Order " + order);
-
-                                Intent intent = new Intent(this, ShowLocationActivity.class);
-                                System.out.println("*************************" + this);
-                                Bundle b = new Bundle();
-                                b.putParcelable(FORKLIFT_KEY, this.forklift);
-                                b.putParcelable(ORDER_KEY, order);
-                                intent.putExtras(b);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                startActivity(intent);
-                            }
-                        },
-                        error -> {
-                            System.out.println("Not able to reach product list for order");
-                        });
-                Controller.getInstance(this).addToRequestQueue(jsonObjectRequest);
-            }
-
-        System.out.println("FINE*******************");
+                            Intent intent = new Intent(this, ShowLocationActivity.class);
+                            Bundle b = new Bundle();
+                            b.putParcelable(FORKLIFT_KEY, this.forklift);
+                            b.putParcelable(ORDER_KEY, order);
+                            intent.putExtras(b);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                        }
+                    },
+                    error -> {
+                        System.out.println("Not able to reach product list for order");
+                    });
+            Controller.getInstance(this).addToRequestQueue(jsonObjectRequest);
+        }
     }
 
     /**
@@ -125,19 +118,4 @@ public class OrderService extends Service {
     public void onDestroy() {
         super.onDestroy();
     }
-
-    /**
-     * Method for receiving messages from the activity handler.
-     * I add the request to the service request queue.
-     * The request is of the correct type.
-
-    public void ActivitySendMessage(Message msg, ActivityAPI cls){
-        this.activityTesting = cls;
-        Bundle bundle = msg.getData();
-        this.request = bundle.getParcelable(KEY);
-
-
-        this.userRequestQueue.add(request);
-        executeRequest(getNextRequest());
-    }*/
 }

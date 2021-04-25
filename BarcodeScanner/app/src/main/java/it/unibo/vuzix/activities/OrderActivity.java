@@ -2,7 +2,6 @@ package it.unibo.vuzix.activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,12 +12,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
-import com.android.volley.Response;
 import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.HttpHeaderParser;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 
 import org.json.JSONException;
@@ -91,8 +86,8 @@ public class OrderActivity extends Activity implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.confermOrderButton) { //CONFERM
-            if(setPlacementOrder());
-                numOrder++;
+            setPlacementOrder();
+            numOrder++;
 
             System.out.println("N.Placement " + forklift.getPlacementNumber() );
             if (numOrder < forklift.getPlacementNumber()) {
@@ -104,57 +99,53 @@ public class OrderActivity extends Activity implements View.OnClickListener {
         }
     }
 
-    private boolean setPlacementOrder() {
+    private void setPlacementOrder() {
         Integer orderCode = Integer.valueOf(orderEditText.getText().toString());
         Integer placementCode = Integer.valueOf(placementEditText.getText().toString());
         System.out.println("Confirm to connect order " + orderCode + " to placement " + placementCode);
         JSONObject jsonObject = new JSONObject();
-        //https://stackoverflow.com/questions/48424033/android-volley-post-request-with-json-object-in-body-and-getting-response-in-str/48424181
+        forklift.addElementMap(orderCode, placementCode);
 
-            forklift.addElementMap(orderCode, placementCode);
+        //CREATE JsonObject that represents the body request
+        try {
+            jsonObject.put("placement_id", placementCode);
+            jsonObject.put("order_id", orderCode);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        final String mRequestBody = jsonObject.toString();
 
-            //CREATE JsonObject that represents the body request
-            try {
-                jsonObject.put("placement_id", placementCode);
-                jsonObject.put("order_id", orderCode);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            final String mRequestBody = jsonObject.toString();
+        //POST localhost:5000/smartForklift/idRASPBERRRY/action/setPlacement
+        //body: {
+        //    "placement_id": 1,
+        //    "order_id": 447499
+        //}
+        String url = RaspberryAPI.setPlacement(String.valueOf(this.forklift.getIdRaspberry()));
+        System.out.println("ORDER ACTIVITY " + url);
+        StringRequest jsonObjectRequest = new StringRequest(
+                Request.Method.POST,
+                url,
+                response -> {},
+                error -> {
+                    Toast.makeText(OrderActivity.this, "Error to set placement-order", Toast.LENGTH_SHORT).show();
+                }) {
+                    @Override
+                    public String getBodyContentType() {
+                        return "application/json; charset=utf-8";
+                    }
 
-            //POST localhost:5000/smartForklift/idRASPBERRRY/action/setPlacement
-            //body: {
-            //    "placement_id": 1,
-            //    "order_id": 447499
-            //}
-            String url = RaspberryAPI.setPlacement(String.valueOf(this.forklift.getIdRaspberry()));
-            System.out.println("ORDER ACTIVITY " + url);
-            StringRequest jsonObjectRequest = new StringRequest(
-                    Request.Method.POST,
-                    url,
-                    response -> {},
-                    error -> {
-                        Toast.makeText(OrderActivity.this, "Error to set placement-order", Toast.LENGTH_SHORT).show();
-                    }) {
-                        @Override
-                        public String getBodyContentType() {
-                            return "application/json; charset=utf-8";
+                    @Override
+                    public byte[] getBody() {
+                        try {
+                            return mRequestBody == null ? null : mRequestBody.getBytes("utf-8");
+                        } catch (UnsupportedEncodingException uee) {
+                            VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", mRequestBody, "utf-8");
+                            return null;
                         }
+                    }
 
-                        @Override
-                        public byte[] getBody() {
-                            try {
-                                return mRequestBody == null ? null : mRequestBody.getBytes("utf-8");
-                            } catch (UnsupportedEncodingException uee) {
-                                VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", mRequestBody, "utf-8");
-                                return null;
-                            }
-                        }
-
-                    };
-            Controller.getInstance(this).addToRequestQueue(jsonObjectRequest);
-
-        return true;
+                };
+        Controller.getInstance(this).addToRequestQueue(jsonObjectRequest);
     }
 
     private void addNewOrderDialog(){
@@ -163,7 +154,6 @@ public class OrderActivity extends Activity implements View.OnClickListener {
         ab.setMessage("Would you add an other order?");
         ab.setPositiveButton("yes", (dialog, which) -> {
             dialog.dismiss();
-            //todo reload the same activity
             orderEditText.setText("");
             placementEditText.setText("");
             confirmButton.setEnabled(false);
@@ -179,7 +169,6 @@ public class OrderActivity extends Activity implements View.OnClickListener {
     }
 
     private void startOrderService(){
-        System.out.println("----------------------------START SERVICE");
         Intent intent = new Intent(this, OrderService.class);
         intent.putExtra(FORKLIFT_KEY, forklift);
         startService(intent);
