@@ -13,37 +13,74 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+
+import it.unibo.vuzix.controller.Controller;
+import it.unibo.vuzix.model.Forklift;
+import it.unibo.vuzix.services.OrderService;
+import it.unibo.vuzix.api.RaspberryAPI;
+
+import static it.unibo.vuzix.model.Forklift.FORKLIFT_KEY;
+
 public class OrderActivity extends Activity implements View.OnClickListener {
     private Button confirmButton;
-    private Button backButton;
-    private EditText editText;
+    private EditText orderEditText;
+    private EditText placementEditText;
     private int numOrder = 0;
-    private static final int MAXORDER = 2;
+    private Forklift forklift;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order);
 
+        Bundle bundle = getIntent().getExtras();
+        forklift = (Forklift) bundle.get(FORKLIFT_KEY);
+        System.out.println("Forklift " + forklift);
+
         confirmButton = findViewById(R.id.confermOrderButton);
         confirmButton.setEnabled(false);
         confirmButton.setOnClickListener(this);
 
-        backButton = findViewById(R.id.backButtonOrder);
-        backButton.setOnClickListener(this);
-
-        editText = findViewById(R.id.barcodeOrder);
-        editText.addTextChangedListener(new TextWatcher() {
+        orderEditText = findViewById(R.id.barcodeOrder);
+        orderEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) { }
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {   }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() != 0)
+                    confirmButton.setEnabled(true);
+                else
+                    confirmButton.setEnabled(false);
+            }
+        });
+
+        placementEditText = findViewById(R.id.barcodePlacement);
+        placementEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) { }
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(s.length() != 0)
+                if (s.length() != 0)
                     confirmButton.setEnabled(true);
                 else
                     confirmButton.setEnabled(false);
@@ -51,50 +88,101 @@ public class OrderActivity extends Activity implements View.OnClickListener {
         });
     }
 
-    private <T> void launchActivity(Class<T> clazz) {
-        startActivity(new Intent(this, clazz));
-    }
-
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.confermOrderButton) { //CONFERM
-            System.out.println("Ok");
-            Editable code = editText.getText();
-            //todo partire chiamata di richiesta di connessione all'ordine
-            //todo popup o testo di conferma poi cambio schermata
-            numOrder++;
-            if (numOrder < MAXORDER){
-                AlertDialog.Builder ab = new AlertDialog.Builder(OrderActivity.this);
-                ab.setTitle("Would you add an other order?");
-                ab.setMessage("Would you add an other order?");
-                ab.setPositiveButton("yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        //todo reload the same activity
-                        editText.setText("");
-                    }
-                });
-                ab.setNegativeButton("no", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        OrderActivity.this.finish();
-                        launchActivity(ShowLocationActivity.class);
-                    }
-                });
-                ab.show();
-            } else {
-                Toast.makeText(OrderActivity.this, "You have reached the maximum number of orders that can be managed", Toast.LENGTH_SHORT).show();
-                launchActivity(ShowLocationActivity.class);
-                //OrderActivity.this.finish();
-            }
+            if(setPlacementOrder());
+                numOrder++;
 
-        } else if (view.getId() == R.id.backButtonOrder) { //BACK
-            System.out.println("back");
-            //TODO It's right?!?!?
-            OrderActivity.this.finish();
-            setContentView(R.layout.activity_connect);
+            System.out.println("N.Placement " + forklift.getPlacementNumber() );
+            if (numOrder < forklift.getPlacementNumber()) {
+                addNewOrderDialog();
+            } else {
+                startOrderService();
+                Toast.makeText(OrderActivity.this, "You have reached the maximum number of orders that can be managed", Toast.LENGTH_SHORT).show();
+            }
         }
     }
+
+    private boolean setPlacementOrder() {
+        Integer orderCode = Integer.valueOf(orderEditText.getText().toString());
+        Integer placementCode = Integer.valueOf(placementEditText.getText().toString());
+        System.out.println("Confirm to connect order " + orderCode + " to placement " + placementCode);
+        JSONObject jsonObject = new JSONObject();
+        //https://stackoverflow.com/questions/48424033/android-volley-post-request-with-json-object-in-body-and-getting-response-in-str/48424181
+
+            forklift.addElementMap(orderCode, placementCode);
+
+            //CREATE JsonObject that represents the body request
+            try {
+                jsonObject.put("placement_id", placementCode);
+                jsonObject.put("order_id", orderCode);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            final String mRequestBody = jsonObject.toString();
+
+            //POST localhost:5000/smartForklift/idRASPBERRRY/action/setPlacement
+            //body: {
+            //    "placement_id": 1,
+            //    "order_id": 447499
+            //}
+            String url = RaspberryAPI.setPlacement(String.valueOf(this.forklift.getIdRaspberry()));
+            System.out.println("ORDER ACTIVITY " + url);
+            StringRequest jsonObjectRequest = new StringRequest(
+                    Request.Method.POST,
+                    url,
+                    response -> {},
+                    error -> {
+                        Toast.makeText(OrderActivity.this, "Error to set placement-order", Toast.LENGTH_SHORT).show();
+                    }) {
+                        @Override
+                        public String getBodyContentType() {
+                            return "application/json; charset=utf-8";
+                        }
+
+                        @Override
+                        public byte[] getBody() {
+                            try {
+                                return mRequestBody == null ? null : mRequestBody.getBytes("utf-8");
+                            } catch (UnsupportedEncodingException uee) {
+                                VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", mRequestBody, "utf-8");
+                                return null;
+                            }
+                        }
+
+                    };
+            Controller.getInstance(this).addToRequestQueue(jsonObjectRequest);
+
+        return true;
+    }
+
+    private void addNewOrderDialog(){
+        AlertDialog.Builder ab = new AlertDialog.Builder(OrderActivity.this);
+        ab.setTitle("Would you add an other order?");
+        ab.setMessage("Would you add an other order?");
+        ab.setPositiveButton("yes", (dialog, which) -> {
+            dialog.dismiss();
+            //todo reload the same activity
+            orderEditText.setText("");
+            placementEditText.setText("");
+            confirmButton.setEnabled(false);
+            this.placementEditText.requestFocus();
+        });
+        ab.setNegativeButton("no", (dialog, which) -> {
+            startOrderService();
+            Toast.makeText(OrderActivity.this, "Loading . . .", Toast.LENGTH_SHORT).show();
+            dialog.dismiss();
+            OrderActivity.this.finish();
+        });
+        ab.show();
+    }
+
+    private void startOrderService(){
+        System.out.println("----------------------------START SERVICE");
+        Intent intent = new Intent(this, OrderService.class);
+        intent.putExtra(FORKLIFT_KEY, forklift);
+        startService(intent);
+    }
+
 }

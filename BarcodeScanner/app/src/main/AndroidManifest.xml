@@ -16,6 +16,7 @@
         <activity android:name=".ConnectActivity"></activity>
         <activity android:name=".OrderActivity"></activity>
         <activity android:name=".ShowLocationActivity"></activity>
+        <service android:name="it.unibo.vuzix.services.OrderService"></service>
     </application>
 
     <uses-permission android:name="android.permission.CAMERA" />

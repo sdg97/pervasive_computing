@@ -12,6 +12,20 @@ public class ProductInfo implements Parcelable {
     private int quantity;
     private boolean picked = false;
 
+    //metodo statico CREATOR: oggetto che implementa l'interfaccia Parcelable.Creator
+    // per ricostruire la classe che implementa Parcelable
+    public static final Creator<ProductInfo> CREATOR = new Creator<ProductInfo>() {
+        @Override
+        public ProductInfo createFromParcel(Parcel parcel) {
+            return new ProductInfo(parcel);
+        }
+
+        @Override
+        public ProductInfo[] newArray(int i) {
+            return new ProductInfo[i];
+        }
+    };
+
     public ProductInfo(){
 
     }
@@ -36,6 +50,7 @@ public class ProductInfo implements Parcelable {
         }
         return productInfo;
     }
+
     //TODO
     public JSONObject toJson(){
         //N.B ATTENZIONE A DARE AI CAMPI LO STESSO NOME DEL jSON
@@ -64,18 +79,8 @@ public class ProductInfo implements Parcelable {
         return 0;
     }
 
-    public static final Creator<ProductInfo> CREATOR = new Creator<ProductInfo>() {
-        @Override
-        public ProductInfo createFromParcel(Parcel in) {
-            return new ProductInfo(in);
-        }
 
-        @Override
-        public ProductInfo[] newArray(int size) {
-            return new ProductInfo[size];
-        }
-    };
-
+    //Getter e Setter
     public int getIdOrder() {
         return idOrder;
     }
@@ -101,4 +106,12 @@ public class ProductInfo implements Parcelable {
     }
 
 
+    @Override
+    public String toString() {
+        return "ProductInfo{" +
+                "idOrder=" + idOrder +
+                ", quantity=" + quantity +
+                ", picked=" + picked +
+                '}';
+    }
 }
