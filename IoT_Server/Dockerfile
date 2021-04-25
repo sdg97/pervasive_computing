@@ -1,9 +1,6 @@
 FROM python:3
 
-#COPY . /IoTServer 
-#WORKDIR ./IoTServer
 COPY ./requirements.txt ./requirements.txt
-#EXPOSE 6379
 
 RUN pip install -r requirements.txt
 VOLUME /IoTServer 
