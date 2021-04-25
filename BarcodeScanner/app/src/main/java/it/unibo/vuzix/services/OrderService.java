@@ -28,7 +28,6 @@ import static it.unibo.vuzix.model.Forklift.FORKLIFT_KEY;
 //https://developer.android.com/guide/components/services
 public class OrderService extends Service {
 
-    public static final int ACTIVITY_SHOWLOCATION_CODE = 4;
     public static final String ORDER_KEY = "ORDER";
 
     private Forklift forklift;
@@ -93,9 +92,6 @@ public class OrderService extends Service {
                                 order.setProducts(productList);
                                 System.out.println("ORDER SERVICE Order " + order);
 
-                                //ArrayList<Product> orders = new ArrayList<>();
-                                //orders.addAll(productList);
-                                //TODO Check
                                 Intent intent = new Intent(this, ShowLocationActivity.class);
                                 System.out.println("*************************" + this);
                                 Bundle b = new Bundle();

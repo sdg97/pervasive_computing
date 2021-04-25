@@ -20,7 +20,6 @@ public class Product implements Parcelable {
     private ProductInfo productInfo = new ProductInfo();
 
     public Product(){
-
     }
 
     protected Product(Parcel in) {
@@ -46,6 +45,7 @@ public class Product implements Parcelable {
             //In base al Json restituito dalla chiamata
             //http://it2.life365.eu/api/order/idOrder?jwt=...
 
+            //Per rendere più veloce la prova mettere 2 qui
             for (int i = 0; i < jsonObject.getJSONArray("items").length(); i++) {
                 Product product = new Product();
                 ProductInfo productInfo1 = new ProductInfo();

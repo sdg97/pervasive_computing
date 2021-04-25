@@ -12,7 +12,7 @@ public class Controller {
     private static Context context;
 
     private Controller(Context context){
-        context = context;
+        this.context = context;
         //requestQueue = getRequestQueue();
         requestQueue = Volley.newRequestQueue(context.getApplicationContext());
     }
